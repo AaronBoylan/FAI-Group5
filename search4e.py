@@ -11,10 +11,7 @@
 # 
 # We also define a `Node` in a search tree, and some functions on nodes: `expand` to generate successors; `path_actions` and `path_states`  to recover aspects of the path from the node.  
 
-# In[1]:
 
-
-get_ipython().run_line_magic('matplotlib', 'inline')
 import matplotlib.pyplot as plt
 import random
 import heapq
