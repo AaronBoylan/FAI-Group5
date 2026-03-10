@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from peg_board import EnglishPegBoard, TrianglePegBoard
+
 from peg_board import *
 from search4e import *
 
@@ -11,12 +11,17 @@ class PegSolitaire(Problem):
     def __init__(self, shape='English'):
         assert shape == 'English' or shape == 'Triangle'
         if shape == 'English':
-            board = EnglishPegBoard()
+            # board = EnglishPegBoardDict()
+            board = EnglishPegBoardInt()
         elif shape == 'Triangle':
-            board = TrianglePegBoard()
+            # board = TrianglePegBoardDict()
+            board = TrianglePegBoardInt()
 
         self.initial = board
-        self.goal = board.init_hole
+        if isinstance(board, PegBoardDict):
+            self.goal = board.init_hole
+        else:
+            self.goal = 1 << board.init_hole
 
     def actions(self, board):
         """Return a collection of the allowable moves from this state."""
@@ -28,7 +33,10 @@ class PegSolitaire(Problem):
 
     def is_goal(self, board):
         """Return True if this is a final state for the game."""
-        return len(board.pegs) == 1 and self.goal in board.pegs
+        if isinstance(board, PegBoardDict):
+            return len(board.pegs) == 1 and self.goal in board.pegs
+        else:
+            return board.state.bit_count() == 1 and board.state == self.goal
 
    # def action_cost(self, s, a, s1):
    #      """Return the value of this final state to player."""
@@ -36,12 +44,18 @@ class PegSolitaire(Problem):
 
     def h1(self, board):
         # peg count heuristic
-        return len(board.pegs) - 1
+        if isinstance(board, PegBoardDict):
+            return len(board.pegs) - 1
+        else:
+            return board.state.bit_count() - 1
 
     def h2(self, board):
         # distance heuristic
-        gi, gj = self.goal
-        return sum(abs(i-gi) + abs(j-gj) for (i,j) in board.pegs)
+        if isinstance(board, PegBoardDict):
+            gi, gj = self.goal
+            return sum(abs(i-gi) + abs(j-gj) for (i,j) in board.pegs)
+        else:
+            return 0
 
     def h3(self, board):
         # dead pegs heuristic

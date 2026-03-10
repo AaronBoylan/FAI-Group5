@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 from games4e import Game
-from peg_board import EnglishPegBoard, TrianglePegBoard
+from peg_board import *
 
 class PegDuotaire(Game):
     """PegDuotaire, a subclass of Game, represents one player in a Peg Duotaire game."""
     def __init__(self, shape='English'):
         assert shape == 'English' or shape == 'Triangle'
         if shape == 'English':
-            board = EnglishPegBoard(to_move='X')
+            board = EnglishPegBoardDict(to_move='X')
         elif shape == 'Triangle':
-            board = TrianglePegBoard(to_move='X')
+            board = TrianglePegBoardDict(to_move='X')
 
         self.initial = board
 
