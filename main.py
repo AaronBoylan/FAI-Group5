@@ -14,21 +14,24 @@ def play_peg_solitaire(searchType: int):
     startTime = time.time()
     pathStates = []
     match searchType:
-        case 1:
-            print(f'Running BFS...')
-            pathStates = path_states(breadth_first_bfs(peg_sol)) 
+        # case 1:
+        #     print(f'Running BFS...')
+        #     pathStates = path_states(breadth_first_bfs(peg_sol))
         case 2:
             print(f'Running DFS...')
             pathStates = path_states(depth_first_bfs(peg_sol))
-        case 3:
-            print(f'Running Iterative Deepening...')                
-            pathStates = path_states(iterative_deepening_search(peg_sol))
+        # case 3:
+        #     print(f'Running Iterative Deepening...')
+        #     pathStates = path_states(iterative_deepening_search(peg_sol))
         case 4:
             print(f'Running A* Search...')
             pathStates = path_states(astar_search(peg_sol))
         case 5:
             print(f'Running Greedy BFS...')
             pathStates = path_states(greedy_bfs(peg_sol))
+        case 6:
+            print(f'Running Bidirectional A* Search...')
+            pathStates = path_states(peg_bidirectional_astar_search(peg_sol))
         case _:
             print("Invalid input.")
     
@@ -53,11 +56,12 @@ def main():
     match userInput:
         case 1:
             searchType = int(input("Select search type: \n" \
-                                    "1. Breadth-First Search\n" \
+                                    # "1. Breadth-First Search\n" \
                                     "2. Depth-First Search\n" \
-                                    "3. Iterative Deepening Search\n" \
+                                    # "3. Iterative Deepening Search\n" \
                                     "4. A* Search\n" \
-                                    "5. Greedy Best-First Search\n"))
+                                    "5. Greedy Best-First Search\n" \
+                                    "6. Bidirectional A* Search\n"))
             play_peg_solitaire(searchType)
         case 2:
             play_peg_duotaire()
