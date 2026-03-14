@@ -269,7 +269,7 @@ class EnglishPegBoardInt(PegBoardInt):
             rows.append(" ".join(board[r]).rstrip())
         return "\n".join(rows)
 
-class TrianglePegBoardInt(PegBoardInt):
+class TrianglePegBoardInt(PegBoardInt): 
     INDEX_MAP = {
         (0, 0): 0,
         (1, 0): 1, (1, 1): 2,
@@ -278,6 +278,19 @@ class TrianglePegBoardInt(PegBoardInt):
         (4, 0): 10, (4, 1): 11, (4, 2): 12, (4, 3): 13, (4, 4): 14
     }
     MOVES = []
+
+    PAGODA = [
+            
+                4,
+                3, 3,
+                2, 2, 2,
+                1, 1, 1, 1,
+                0, 0, 0, 0, 0
+
+            
+    ]
+    GOAL_INDEX = 0
+    GOAL_PAGODA = PAGODA[GOAL_INDEX]
 
     def __init__(self, total_holes=15, init_hole=0, to_move=None):
         super().__init__(total_holes, init_hole, to_move)

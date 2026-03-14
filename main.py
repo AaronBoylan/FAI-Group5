@@ -10,7 +10,7 @@ import time
 
 
 def play_peg_solitaire(searchType: int, test=False) -> float:
-    peg_sol = PegSolitaire()
+    peg_sol = PegSolitaire(shape='Triangle')
 
     startTime = time.time()
     pathStates = []
