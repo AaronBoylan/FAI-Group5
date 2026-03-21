@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 from main import play_peg_solitaire
@@ -101,14 +103,20 @@ def plot_board_states(pathStates, max_states=6):
         return
 
     # Select key states to show
-    n_states = min(max_states, len(pathStates))
-    indices = np.linspace(0, len(pathStates)-1, n_states, dtype=int)
+    n_states = len(pathStates)
+    #indices = np.linspace(0, len(pathStates)-1, n_states, dtype=int)
+    indices = range(0, n_states)
 
-    fig, axes = plt.subplots(1, n_states, figsize=(4*n_states, 4))
+    n_cols = 4
+    n_rows = math.ceil(n_states / n_cols)
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(2*n_cols, 2*n_rows))
+    axes = axes.flatten()
     if n_states == 1:
         axes = [axes]
 
     for i, idx in enumerate(indices):
+
         state = pathStates[idx]
         board_str = str(state)
 
@@ -120,10 +128,14 @@ def plot_board_states(pathStates, max_states=6):
         # Display the board as text
         axes[i].text(0.5, 0.5, board_str,
                     transform=axes[i].transAxes,
-                    fontsize=10,
+                    fontsize=8,
                     verticalalignment='center',
                     horizontalalignment='center',
                     fontfamily='monospace')
+        
+    #len(axes) is a little too big, so ignore the extra ones
+    for extra_indices in range(len(indices), len(axes)):
+            axes[extra_indices].axis('off')
 
     plt.tight_layout()
     plt.show()
