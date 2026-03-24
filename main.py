@@ -11,12 +11,14 @@ import time
 
 def play_peg_solitaire(searchType: int, test=False, visualize=False) -> tuple:
     #return tuple for compatiblity with multiple return values
-    peg_sol = PegSolitaire(shape='Triangle')
+    peg_sol = PegSolitaire()
+    # peg_sol = PegSolitaire(shape='Triangle')
+    # peg_sol = PegSolitaire(shape='French')
 
     startTime = time.time()
     pathStates = []
     
-    pathStates = path_states(search_methods.get(searchType)(peg_sol))        
+    pathStates = path_states(search_methods.get(searchType)(peg_sol))
         
     if not test:
         print(f"Running {search_names.get(searchType)}...")

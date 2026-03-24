@@ -28,8 +28,8 @@ import copy
 class PegBoardInt:
     empty = 'O'
     peg = 'X'
-    MOVES = []
-    SYM_MAPS = []
+    MOVES = None
+    SYM_MAPS = None
 
     def __init__(self, total_holes, init_hole, to_move):
         self.total_holes, self.init_hole, self.to_move = total_holes, init_hole, to_move
@@ -73,7 +73,6 @@ class PegBoardInt:
             new_board.state |= o
             new_board.state |= t
             new_board.pagoda = self.pagoda - delta
-
         return new_board
 
     def canonical_state(self):
@@ -206,14 +205,19 @@ class EnglishPegBoardInt(PegBoardInt):
           #       1, 0, 1,
           #       0, 1, 0
     ]
+    TOTAL_HOLES = 33
+    INIT_INDEX = 16
     GOAL_INDEX = 16
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
+    SIZE = 7
 
-    def __init__(self, total_holes=33, init_hole=16, to_move=None):
+    def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
-        if not self.MOVES:
+        if self.__class__.MOVES is None:
+            self.__class__.MOVES = []
             self.gen_moves()
-        if not self.SYM_MAPS:
+        if self.__class__.SYM_MAPS is None:
+            self.__class__.SYM_MAPS = []
             self.gen_symmetry_maps()
 
     @property
@@ -221,7 +225,7 @@ class EnglishPegBoardInt(PegBoardInt):
         return [(-1, 0), (1, 0), (0, 1), (0, -1)]
 
     def gen_moves(self):
-        INDEX_MAP = EnglishPegBoardInt.INDEX_MAP
+        INDEX_MAP = self.INDEX_MAP
         for (r, c), start in INDEX_MAP.items():
             for dr, dc in self.DIRECTIONS:
                 over = (r + dr, c + dc)
@@ -235,39 +239,79 @@ class EnglishPegBoardInt(PegBoardInt):
                     oi = INDEX_MAP[over]
                     ti = INDEX_MAP[to]
                     delta = self.PAGODA[ti] - self.PAGODA[fi] - self.PAGODA[oi]
-                    self.MOVES.append((f, o, t, delta))
+                    if delta > 0:
+                        print('Invalid Pagoda Function: ', fi, oi, ti, delta)
+                    self.__class__.MOVES.append((f, o, t, delta))
 
     def gen_symmetry_maps(self):
-        coords = {v: k for k, v in self.INDEX_MAP.items()}
-        def rot90(r, c):    return (c, 6 - r)
-        def rot180(r, c):   return (6 - r, 6 - c)
-        def rot270(r, c):   return (6 - c, r)
-        def mirror_h(r, c): return (6 - r, c)
-        def mirror_v(r, c): return (r, 6 - c)
+        INDEX_MAP = self.INDEX_MAP
+        s = self.SIZE
+        coords = {v: k for k, v in INDEX_MAP.items()}
+        def rot90(r, c):    return (c, s - 1 - r)
+        def rot180(r, c):   return (s - 1 - r, s - 1 - c)
+        def rot270(r, c):   return (s - 1 - c, r)
+        def mirror_h(r, c): return (s - 1 - r, c)
+        def mirror_v(r, c): return (r, s - 1 - c)
         transforms = [lambda r, c: (r, c), rot90, rot180, rot270,
                       mirror_h, mirror_v, lambda r, c: rot90(*mirror_h(r, c)), lambda r, c: rot90(*mirror_v(r, c))]
         maps = []
 
         for T in transforms:
-            perm = [0] * 33
+            perm = [0] * self.total_holes
             for i, (r, c) in coords.items():
                 r2, c2 = T(r, c)
-                perm[i] = self.INDEX_MAP[(r2, c2)]
+                perm[i] = INDEX_MAP[(r2, c2)]
             maps.append(perm)
 
-        type(self).SYM_MAPS = maps
+        self.__class__.SYM_MAPS = maps
 
     def __repr__(self):
-        board = [[" "]*7 for _ in range(7)]
-        for (r, c), idx in EnglishPegBoardInt.INDEX_MAP.items():
+        INDEX_MAP = self.INDEX_MAP
+        s = self.SIZE
+        board = [[" "]*s for _ in range(s)]
+        for (r, c), idx in INDEX_MAP.items():
             if self.state & (1 << idx):
                 board[r][c] = self.peg
             else:
                 board[r][c] = self.empty
         rows = []
-        for r in range(7):
+        for r in range(s):
             rows.append(" ".join(board[r]).rstrip())
         return "\n".join(rows)
+
+class FrenchPegBoardInt(EnglishPegBoardInt):
+    INDEX_MAP = {
+        (0, 2): 0, (0, 3): 1, (0, 4): 2,
+        (1, 1): 3, (1, 2): 4, (1, 3): 5, (1, 4): 6, (1, 5): 7,
+        (2, 0): 8, (2, 1): 9, (2, 2): 10, (2, 3): 11, (2, 4): 12, (2, 5): 13, (2, 6): 14,
+        (3, 0): 15, (3, 1): 16, (3, 2): 17, (3, 3): 18, (3, 4): 19, (3, 5): 20, (3, 6): 21,
+        (4, 0): 22, (4, 1): 23, (4, 2): 24, (4, 3): 25, (4, 4): 26, (4, 5): 27, (4, 6): 28,
+        (5, 1): 29, (5, 2): 30, (5, 3): 31, (5, 4): 32, (5, 5): 33,
+        (6, 2): 34, (6, 3): 35, (6, 4): 36
+    }
+    PAGODA = [
+               -1, 0,-1,
+             0, 1, 1, 1, 0,
+         -1, 1, 0, 1, 0, 1,-1,
+          0, 1, 1, 0, 1, 1, 0,
+         -1, 1, 0, 1, 0, 1,-1,
+             0, 1, 1, 1, 0,
+               -1, 0,-1,
+    ]
+    TOTAL_HOLES = 37
+    INIT_INDEX = 17
+    GOAL_INDEX = 16
+    GOAL_PAGODA = PAGODA[GOAL_INDEX]
+    SIZE = 7
+
+    def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
+        super().__init__(total_holes, init_hole, to_move)
+        if self.__class__.MOVES is None:
+            self.__class__.MOVES = []
+            self.gen_moves()
+        if self.__class__.SYM_MAPS is None:
+            self.__class__.SYM_MAPS = []
+            self.gen_symmetry_maps()
 
 class TrianglePegBoardInt(PegBoardInt): 
     INDEX_MAP = {
@@ -277,8 +321,6 @@ class TrianglePegBoardInt(PegBoardInt):
         (3, 0): 6, (3, 1): 7, (3, 2): 8, (3, 3): 9,
         (4, 0): 10, (4, 1): 11, (4, 2): 12, (4, 3): 13, (4, 4): 14
     }
-    MOVES = []
-
     PAGODA = [
             
                 4,
@@ -289,12 +331,16 @@ class TrianglePegBoardInt(PegBoardInt):
 
             
     ]
+    TOTAL_HOLES = 15
+    INIT_INDEX = 0
     GOAL_INDEX = 0
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
+    SIZE = 5
 
-    def __init__(self, total_holes=15, init_hole=0, to_move=None):
+    def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
-        if not self.MOVES:
+        if self.__class__.MOVES is None:
+            self.__class__.MOVES = []
             self.gen_moves()
 
     @property
@@ -302,7 +348,7 @@ class TrianglePegBoardInt(PegBoardInt):
         return [(0, 1), (0, -1), (1, 1), (1, 0), (-1, 0), (-1, -1)]
 
     def gen_moves(self):
-        INDEX_MAP = TrianglePegBoardInt.INDEX_MAP
+        INDEX_MAP = self.INDEX_MAP
         for (r, c), start in INDEX_MAP.items():
             for dr, dc in self.DIRECTIONS:
                 over = (r + dr, c + dc)
@@ -314,14 +360,16 @@ class TrianglePegBoardInt(PegBoardInt):
                     self.MOVES.append((f, o, t, 0))
 
     def __repr__(self):
-        board = [[" "]*5 for _ in range(5)]
-        for (r, c), idx in TrianglePegBoardInt.INDEX_MAP.items():
+        INDEX_MAP = self.INDEX_MAP
+        s = self.SIZE
+        board = [[" "]*s for _ in range(s)]
+        for (r, c), idx in INDEX_MAP.items():
             if self.state & (1 << idx):
                 board[r][c] = self.peg
             else:
                 board[r][c] = self.empty
         rows = []
-        for r in range(5):
+        for r in range(s):
             rows.append(" ".join(board[r]).rstrip())
         return "\n".join(rows)
 
