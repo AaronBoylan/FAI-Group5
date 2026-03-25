@@ -9,10 +9,12 @@ class PegSolitaire(Problem):
     It initializes the board according to the input shape, checks legal moves,
     performs actions, compares the state with the goal, and defines three heuristics."""
     def __init__(self, shape='English', reverse=False):
-        assert shape in ('English', 'Triangle')
+        assert shape in ('English', 'French', 'Triangle')
         if shape == 'English':
             # board = EnglishPegBoardDict()
             board = EnglishPegBoardInt()
+        elif shape == 'French':
+            board = FrenchPegBoardInt()
         elif shape == 'Triangle':
             # board = TrianglePegBoardDict()
             board = TrianglePegBoardInt()
@@ -22,12 +24,10 @@ class PegSolitaire(Problem):
             self.goal = board.init_hole
         else:
             self.goal = copy.copy(self.initial)
-            self.goal.state = 1 << board.init_hole
+            self.goal.state = 1 << board.GOAL_INDEX
             self.goal.pagoda = self.goal.compute_pagoda(self.goal.state)
-            if hasattr(self.goal, "_canon"):
-                del self.goal._canon
-            if hasattr(self.goal, "_hash"):
-                del self.goal._hash
+            self.goal.__dict__.pop("_canon", None)
+            self.goal.__dict__.pop("_hash", None)
         self.reverse = reverse
 
     def actions(self, board):
@@ -43,7 +43,8 @@ class PegSolitaire(Problem):
         if isinstance(board, PegBoardDict):
             return len(board.pegs) == 1 and self.goal in board.pegs
         else:
-            return board.state == self.goal.state
+            # return board.state == self.goal.state
+            return board.canonical_state() == self.goal.canonical_state()
 
    # def action_cost(self, s, a, s1):
    #      """Return the value of this final state to player."""
@@ -129,7 +130,7 @@ def peg_proceed(direction, problem, frontier, reached, reached2, solution):
     node = frontier.pop()
     for child in expand(problem, node):
         board = child.state
-        key = board.canonical_state()
+        key = board._canon if hasattr(board, "_canon") else board.canonical_state()
         if key not in reached or child.path_cost < reached[key].path_cost:
             frontier.add(child)
             reached[key] = child
@@ -141,3 +142,17 @@ def peg_proceed(direction, problem, frontier, reached, reached2, solution):
                 if solution is failure or solution2.path_cost < solution.path_cost:
                     solution = solution2
     return solution
+
+def test_board(peg_sol):
+    """Check if board is valid."""
+    print('Initial board:\n', peg_sol.initial)
+    print('Goal board:\n', peg_sol.goal)
+    board = peg_sol.initial
+    print('MOVES:\n', board.MOVES)
+    actions = peg_sol.actions(board)
+
+    while actions:
+        print('Legal actions:\n', actions)
+        board = peg_sol.result(board, actions[0])
+        print('After performing ', actions[0], '\n', board)
+        actions = peg_sol.actions(board)
