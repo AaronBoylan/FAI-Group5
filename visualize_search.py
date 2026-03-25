@@ -95,8 +95,21 @@ def visualize_search_matlab(searchType: int):
 
     return timeTaken, pathStates, solution
 
-def plot_board_states(pathStates, max_states=6):
+def plot_board_states(pathStates, max_states=2):
     # Plot actual board states at different steps using ASCII-like visualization.
+    def _format_board_for_display(state):
+        board_str = str(state)
+        # Use circle glyphs for display only (do not change game-state encoding).
+        board_str = board_str.replace("X", "●").replace("O", "○")
+        if "Triangle" not in type(state).__name__:
+            return board_str
+
+        # Rows from __repr__ are left-aligned in a fixed grid with trailing spaces.
+        # Strip trailing padding, then center each row in the base width so the triangle is centered.
+        trimmed = [line.rstrip() for line in board_str.splitlines()] #strip all trailing spaces from each line
+        max_width = max((len(line) for line in trimmed), default=0)  #find max of all lines, or default to 0
+        centered = [line.center(max_width) for line in trimmed]  #center all lines, .center pads both sides of line to max with.
+        return "\n".join(centered)
     
     if not pathStates:
         print("No states to visualize!")
@@ -118,7 +131,7 @@ def plot_board_states(pathStates, max_states=6):
     for i, idx in enumerate(indices):
 
         state = pathStates[idx]
-        board_str = str(state)
+        board_str = _format_board_for_display(state)
 
         # Clear the axis
         axes[i].clear()
@@ -222,7 +235,7 @@ if __name__ == "__main__":
         # Generate menu from SEARCH_ALGORITHMS in utils.py
         menu_options = "\n".join([f"{k}. {v['name']}" for k, v in SEARCH_ALGORITHMS.items()])
         alg_choice = int(input(f"Choose algorithm:\n{menu_options}\n"))
-        time_taken, path_states, solution = play_peg_solitaire(alg_choice, test=True, visualize=True)
+        time_taken, path_states, solution = play_peg_solitaire(alg_choice, board_shape='French',  test=True, visualize=True)
         plot_board_states(path_states)
     else:
         print("Invalid choice!")

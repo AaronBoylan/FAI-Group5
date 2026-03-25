@@ -80,8 +80,11 @@ class PegBoardInt:
         if hasattr(self, "_canon"):
             return self._canon
         s = self.state
-        best = s
         maps = self.__class__.SYM_MAPS
+        if not maps:  #check if symmetry maps are generated
+            self._canon = s     #if not, return the state as is
+            return s
+        best = s
         for perm in maps:
             t = self.apply_symmetry(s, perm)
             if t < best:
@@ -276,7 +279,7 @@ class EnglishPegBoardInt(PegBoardInt):
                 board[r][c] = self.empty
         rows = []
         for r in range(s):
-            rows.append(" ".join(board[r]).rstrip())
+            rows.append(" ".join(board[r]))
         return "\n".join(rows)
 
 class FrenchPegBoardInt(EnglishPegBoardInt):
@@ -370,7 +373,7 @@ class TrianglePegBoardInt(PegBoardInt):
                 board[r][c] = self.empty
         rows = []
         for r in range(s):
-            rows.append(" ".join(board[r]).rstrip())
+            rows.append(" ".join(board[r]))
         return "\n".join(rows)
 
 from collections import defaultdict
