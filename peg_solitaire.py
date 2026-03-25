@@ -3,6 +3,7 @@
 from peg_board import *
 from search4e import *
 import copy
+import time
 
 class PegSolitaire(Problem):
     """PegSolitaire, a subclass of Problem, is used to find a solution to a Peg Solitaire puzzle.
@@ -10,6 +11,7 @@ class PegSolitaire(Problem):
     performs actions, compares the state with the goal, and defines three heuristics."""
     def __init__(self, shape='English', reverse=False):
         assert shape in ('English', 'French', 'Triangle')
+        self.shape = shape
         if shape == 'English':
             # board = EnglishPegBoardDict()
             board = EnglishPegBoardInt()
@@ -43,8 +45,8 @@ class PegSolitaire(Problem):
         if isinstance(board, PegBoardDict):
             return len(board.pegs) == 1 and self.goal in board.pegs
         else:
-            # return board.state == self.goal.state
-            return board.canonical_state() == self.goal.canonical_state()
+            return board.state == self.goal.state
+            # return board.canonical_state() == self.goal.canonical_state()
 
    # def action_cost(self, s, a, s1):
    #      """Return the value of this final state to player."""
@@ -108,6 +110,9 @@ def peg_bidirectional_best_first_search(problem_f, f_f, problem_b, f_b, peg_term
 
 def peg_inverse_problem(problem):
     """Create the reverse search problem for Peg Solitaire bidirectional search."""
+    if hasattr(problem, '_object'):
+        problem = problem._object
+
     inv = copy.copy(problem)
     inv.initial, inv.goal = inv.goal, inv.initial
     inv.initial.pagoda = inv.initial.compute_pagoda(inv.initial.state)
@@ -156,3 +161,71 @@ def test_board(peg_sol):
         board = peg_sol.result(board, actions[0])
         print('After performing ', actions[0], '\n', board)
         actions = peg_sol.actions(board)
+
+def test_performance(searchers, shapes, verbose=True):
+    """Show summary statistics for each searcher (and on each problem unless verbose is false)."""
+    for searcher in searchers:
+        print(f'\n{searcher.__name__}:')
+        total_counts = Counter()
+        for shape in shapes:
+            problem = PegSolitaire(shape=shape)
+            time_ms, counts = run_search(searcher, problem)
+            total_counts += counts
+            if verbose: print_time_counts(time_ms, counts, str(problem)[:12] + ' ' + problem.shape)
+
+def test_data_structures():
+    return
+
+from itertools import permutations
+
+def test_directions(searcher, shape):
+    DIR = {'North': (-1, 0), 'South': (1, 0), 'East': (0, 1), 'West': (0, -1)}
+
+    print(f'\n{searcher.__name__} on {shape} board')
+
+    if shape == 'English':
+        board = EnglishPegBoardInt
+    elif shape == 'French':
+        board = FrenchPegBoardInt
+    else:
+        board = TrianglePegBoardInt
+
+    for names in permutations(DIR.keys()):
+        directions = [DIR[n] for n in names]
+        board.DIRECTIONS = directions
+
+        problem = PegSolitaire(shape=shape)
+        time_ms, counts = run_search(searcher, problem)
+        print_time_counts(time_ms, counts, f'{shape} {list(names)}')
+
+def run_search(searcher, problem):
+    prob = peg_CountCalls(problem)
+
+    start = time.perf_counter()
+    soln = searcher(prob)
+    end = time.perf_counter()
+
+    time_ms = (end - start) * 1000
+
+    counts = prob._counts
+    counts.update(actions=len(soln), cost=soln.path_cost)
+
+    return time_ms, counts
+
+def print_time_counts(time, counts, name):
+    """Print one line of the counts report."""
+    print('{:7.2f} ms {:9,d} nodes |{:9,d} goal |{:5.0f} cost |{:8,d} actions | {}'.format(
+          time, counts['result'], counts['is_goal'], counts['cost'], counts['actions'], name))
+
+class peg_CountCalls:
+    """Delegate all attribute gets to the object, and count them in ._counts"""
+    def __init__(self, obj):
+        self._object = obj
+        self._counts = Counter()
+
+    def __getattr__(self, attr):
+        "Delegate to the original object, after incrementing a counter."
+        if attr in ('_object', '_counts'):
+            return object.__getattribute__(self, attr)
+        self._counts[attr] += 1
+        return getattr(self._object, attr)

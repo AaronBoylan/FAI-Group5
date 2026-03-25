@@ -28,8 +28,6 @@ import copy
 class PegBoardInt:
     empty = 'O'
     peg = 'X'
-    MOVES = None
-    SYM_MAPS = None
 
     def __init__(self, total_holes, init_hole, to_move):
         self.total_holes, self.init_hole, self.to_move = total_holes, init_hole, to_move
@@ -210,19 +208,20 @@ class EnglishPegBoardInt(PegBoardInt):
     GOAL_INDEX = 16
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 7
+    DIRECTIONS = [(0, -1), (1, 0), (-1, 0), (0, 1), ] # West, South, North, East
+    MOVES = []
+    SYM_MAPS = []
 
     def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
-        if self.__class__.MOVES is None:
-            self.__class__.MOVES = []
+        if not self.MOVES:
             self.gen_moves()
-        if self.__class__.SYM_MAPS is None:
-            self.__class__.SYM_MAPS = []
+        if not self.SYM_MAPS:
             self.gen_symmetry_maps()
 
-    @property
-    def DIRECTIONS(self): #North, South, East, West
-        return [(-1, 0), (1, 0), (0, 1), (0, -1)]
+    # @property
+    # def DIRECTIONS(self): #North, South, East, West
+    #     return [(-1, 0), (1, 0), (0, 1), (0, -1)]
 
     def gen_moves(self):
         INDEX_MAP = self.INDEX_MAP
@@ -303,14 +302,14 @@ class FrenchPegBoardInt(EnglishPegBoardInt):
     GOAL_INDEX = 16
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 7
+    MOVES = []
+    SYM_MAPS = []
 
     def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
-        if self.__class__.MOVES is None:
-            self.__class__.MOVES = []
+        if not self.MOVES:
             self.gen_moves()
-        if self.__class__.SYM_MAPS is None:
-            self.__class__.SYM_MAPS = []
+        if not self.SYM_MAPS:
             self.gen_symmetry_maps()
 
 class TrianglePegBoardInt(PegBoardInt): 
@@ -336,11 +335,11 @@ class TrianglePegBoardInt(PegBoardInt):
     GOAL_INDEX = 0
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 5
+    MOVES = []
 
     def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
-        if self.__class__.MOVES is None:
-            self.__class__.MOVES = []
+        if not self.MOVES:
             self.gen_moves()
 
     @property

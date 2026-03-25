@@ -33,3 +33,21 @@ SEARCH_ALGORITHMS = {
 # Backward compatibility - maintain existing dictionaries
 search_methods = {k: v['method'] for k, v in SEARCH_ALGORITHMS.items()}
 search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
+
+TESTING_MENUS = {
+    1: {
+        'name': "Compare Performance of Search Algorithms",
+        'short_name': "test_performance",
+        'method': test_performance
+    },
+    2: {
+        'name': "Compare Performance of Different Data Structures",
+        'short_name': "test_data_structures",
+        'method': test_data_structures
+    },
+    3: {
+        'name': "Compare Performance of Different Direction Orders",
+        'short_name': "test_directions",
+        'method': test_directions
+    }
+}
