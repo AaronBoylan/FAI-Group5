@@ -47,6 +47,19 @@ def play_peg_duotaire():
     #final_board = play_game(peg_duo, dict(X=random_player, O=player(alphabeta_search)), verbose=True)  # take very long time for one step
     print(f'Utility of X is: {peg_duo.utility(final_board, "X")}')
 
+def test_peg_solitaire(testType):
+
+    match testType:
+        case 1:
+            test_performance([depth_first_bfs, astar_search, greedy_bfs], ['Triangle', 'English', 'French'])
+            test_performance([peg_bidirectional_astar_search], ['English', 'French'])
+        case 2:
+            pass
+        case 3:
+            test_directions(depth_first_bfs, 'English')
+        case _:
+            print("Invalid input. Please enter 1, 2, or 3.")
+
 def main():
     userInput = int(input("Enter 1 to play Peg Solitaire, or 2 to play Peg Duotaire, or 3 to run test bench: "))
     match userInput:
@@ -65,10 +78,13 @@ def main():
         case 2:
             play_peg_duotaire()
         case 3:
-            from testBench import testBench
-            testBench()
+            # from testBench import testBench
+            # testBench()
+            menu_options = "\n".join([f"{k}. {v['name']}" for k, v in TESTING_MENUS.items()])
+            testType = int(input(f"Select testing: \n{menu_options}\n"))
+            test_peg_solitaire(testType)
         case _:
-            print("Invalid input. Please enter 1 or 2.")
+            print("Invalid input. Please enter 1, 2, or 3.")
 
 if __name__ == "__main__":
     main()
