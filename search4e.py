@@ -20,6 +20,7 @@ import sys
 from collections import defaultdict, deque, Counter
 from itertools import combinations
 import copy
+import numpy as np
 
 class Problem(object):
     """The abstract class for a formal problem. A new domain subclasses this,
@@ -264,6 +265,7 @@ def astar_search(problem, h=None):
 #     return best_first_search(problem, f=lambda n: g(n) + weight * h(n))
 
 
+
 def greedy_bfs(problem, h=None):
     """Search nodes with minimum h(n)."""
     h = h or problem.h
@@ -292,8 +294,153 @@ def depth_first_bfs(problem):
 #                 (ancestor.state == node.state or find_cycle(ancestor.parent, k - 1)))
 #     return find_cycle(node.parent, k)
 
+class MCT_Node: #from utils4e.py
+    """Node in the Monte Carlo search tree, keeps track of the children states."""
+    def __init__(self, parent=None, state=None, U=0, N=0):
+        self.__dict__.update(parent=parent, state=state, U=U, N=N)
+        self.children = {}
+        self.actions = None
 
 
+
+def mcts_search(problem, h=None, N=1000, max_moves=2000, use_heuristic=True):
+    """Monte Carlo tree search for single-agent problems.
+
+    If ``use_heuristic`` is True (default), rollouts pick moves by lowest ``h``
+    and non-goal terminal states get a shaped reward from ``h``.
+    If False, rollouts are uniformly random and reward is 1.0 only on true goals
+    (no heuristic in rollout or as a surrogate goal signal).
+    """
+    h_fn = h or problem.h
+
+    def terminal_test(state):
+        #check for goal or no action available.  i.e. emppty actions list
+        return problem.is_goal(state) or not list(problem.actions(state))
+
+    def ucb(n, C=1.4): #from utils4e.py
+        return np.inf if n.N == 0 else n.U / n.N + C * np.sqrt(np.log(n.parent.N) / n.N)
+
+    def select(n): #from games4e.py
+        """select a leaf node in the tree"""
+        if n.children:
+            return select(max(n.children.keys(), key=ucb))
+        else:
+            return n
+
+    def expand(n): #from games4e.py
+        """expand the leaf node by adding all its children states"""
+        if not n.children and not terminal_test(n.state):
+            n.children = {MCT_Node(state=problem.result(n.state, action), parent=n): action
+                          for action in list(problem.actions(n.state))}
+        return select(n)
+
+    def simulate(problem, state, max_steps=2000):
+        """simulate the utility of current state by with hueristics.
+        Note it was tried withh pure random rollout, but it did not solve Englishh or French boards.
+        heuristics was added to encourage solutions to be found.
+        max_steps is a safety cap to avoid infinite random walks in cyclic state spaces.
+        """
+        rollout = []
+        steps = 0
+
+        # Safety cap to avoid infinite random walks in cyclic state spaces.
+        while not terminal_test(state) and steps < max_steps:
+            actions = list(problem.actions(state))
+            if not actions:
+                break
+            if use_heuristic:
+                #check all actions for lowest h value
+                scored = [(h_fn(Node(problem.result(state, a))), a) for a in actions]
+                #find the best action based on h value
+                scored.sort(key=lambda t: t[0])
+                min_h = scored[0][0]
+                if min_h == math.inf:
+                    action = random.choice(actions)
+                else:
+                    ties = [a for hv, a in scored if hv == min_h]
+                    #randomly choose one of the best actions if there are ties
+                    action = random.choice(ties)
+            else:
+                action = random.choice(actions)
+            state = problem.result(state, action)
+            rollout.append((state, action))
+            steps += 1
+        if problem.is_goal(state):
+            reward = 1.0
+        elif use_heuristic:
+            #reward shaping
+            hv = h_fn(Node(state))
+            reward = 0.0 if hv == math.inf else 1.0 / (1.0 + hv)
+        else:
+            reward = 0.0
+        return reward, rollout, state
+
+    def backprop(n, utility): #from games4e.py
+        """passing the utility back to all parent nodes"""
+        if utility > 0:
+            n.U += utility
+        # if utility == 0:
+        #     n.U += 0.5
+        n.N += 1
+        if n.parent:
+            backprop(n.parent, utility)
+
+    def build_solution_node(tree_child, rollout, tail=None):
+        """Convert a tree path + rollout into a search4e.Node chain.
+
+        If `tail` is given (a Node ending at the inner MCTS root state), new
+        nodes are appended after it. Otherwise the chain starts from ``problem.initial``.
+        """
+        chain = []
+        n = tree_child
+        while n is not None and n.parent is not None:
+            a = n.parent.children.get(n)
+            chain.append((n.state, a))
+            n = n.parent
+        chain.reverse()
+
+        current = Node(problem.initial) if tail is None else tail
+        for s, a in chain:
+            current = Node(s, current, a, current.path_cost + 1)
+
+        for s, a in rollout:
+            current = Node(s, current, a, current.path_cost + 1)
+        return current
+
+    # Use MCTS as a policy: repeatedly choose the most-visited root child,
+    # advancing the state until a goal is reached (or we hit a safety limit).
+    state = problem.initial
+    current = Node(state)
+    
+    for _move in range(max_moves): #limit the number of moves to avoid infinite loops
+        if problem.is_goal(state): #check terminal state
+            return current
+
+        root = MCT_Node(state=state)
+
+        for _ in range(N):  #ignore the iterator variable _
+            leaf = select(root)
+            child = expand(leaf)
+            result, rollout, end_state = simulate(problem, child.state)
+            backprop(child, result)
+            if problem.is_goal(end_state):
+                return build_solution_node(child, rollout, tail=current)
+
+        if not root.children:
+            return current
+
+        #pick node with highest visit count
+        max_state = max(root.children, key=lambda p: p.N) #p.N is the visit count of the child node
+        #get thhe action that led to the best child
+        best_action = root.children.get(max_state)
+
+        if best_action is None:
+            return current
+
+        state = max_state.state
+        current = Node(state, current, best_action, current.path_cost + 1)
+
+    return current
 # In[7]:
 
 

@@ -27,7 +27,13 @@ SEARCH_ALGORITHMS = {
         'name': "Bidirectional A* Search",
         'short_name': "Bidirectional A* Search",
         'method': peg_bidirectional_astar_search
+    },
+    5: {
+        'name': "MCTS Monte Carlo Tree Search",
+        'short_name': "MCTS Search",
+        'method': mcts_search
     }
+    
 }
 
 # Backward compatibility - maintain existing dictionaries

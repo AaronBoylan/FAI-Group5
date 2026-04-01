@@ -11,6 +11,9 @@ import time
 
 def play_peg_solitaire(searchType: int, board_shape='English', test=False, visualize=False) -> tuple:
     #return tuple for compatiblity with multiple return values
+
+    #create the game board
+    #peg_sol is a PegSolitaire object which is a subclass of Problem
     peg_sol = PegSolitaire(shape=board_shape)
     # peg_sol = PegSolitaire(shape='Triangle')
     # peg_sol = PegSolitaire(shape='French')
@@ -18,6 +21,7 @@ def play_peg_solitaire(searchType: int, board_shape='English', test=False, visua
     startTime = time.time()
     pathStates = []
     
+    #search_methods.get(searchType) is a function, so we need to call it with the arguments
     pathStates = path_states(search_methods.get(searchType)(peg_sol))
         
     if not test:
