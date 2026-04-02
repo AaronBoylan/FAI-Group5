@@ -8,9 +8,10 @@ from games4e import *
 from utils import *
 import time
 
-def play_peg_solitaire(searchType: int, test=False, visualize=False) -> tuple:
+
+def play_peg_solitaire(searchType: int, board_shape='English', test=False, visualize=False) -> tuple:
     #return tuple for compatiblity with multiple return values
-    peg_sol = PegSolitaire()
+    peg_sol = PegSolitaire(shape=board_shape)
     # peg_sol = PegSolitaire(shape='Triangle')
     # peg_sol = PegSolitaire(shape='French')
 
