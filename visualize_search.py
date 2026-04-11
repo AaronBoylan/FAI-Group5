@@ -236,7 +236,7 @@ if __name__ == "__main__":
         # Generate menu from SEARCH_ALGORITHMS in utils.py
         menu_options = "\n".join([f"{k}. {v['name']}" for k, v in SEARCH_ALGORITHMS.items()])
         alg_choice = int(input(f"Choose algorithm:\n{menu_options}\n"))
-        time_taken, path_states, solution = play_peg_solitaire(alg_choice, board_shape='English',  test=True, visualize=True)
+        time_taken, path_states, solution = play_peg_solitaire(alg_choice, board_shape='French',  test=True, visualize=True)
         plot_board_states(path_states)
     else:
         print("Invalid choice!")
