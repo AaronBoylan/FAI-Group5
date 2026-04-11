@@ -123,7 +123,8 @@ def plot_board_states(pathStates, max_states=2):
     n_cols = 4
     n_rows = math.ceil(n_states / n_cols)
 
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(2*n_cols, 2*n_rows))
+    # Keep the overall figure at a 16:9 aspect ratio. to fit laptop screen
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 9))
     axes = axes.flatten()
     if n_states == 1:
         axes = [axes]

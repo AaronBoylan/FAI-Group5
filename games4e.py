@@ -131,6 +131,8 @@ def alphabeta_search(game, state):
     return max_value(state, -infinity, +infinity)
 
 
+
+
 # # A Simple Game: Tic-Tac-Toe
 # 
 # We have the notion of an abstract game, we have some search functions; now it is time to define a real game; a simple one, tic-tac-toe. Moves are `(x, y)` pairs denoting squares, where `(0, 0)` is the top left, and `(2, 2)` is the bottom right (on a board of size `height=width=3`).
@@ -422,6 +424,9 @@ def h_alphabeta_search(game, state, cutoff=cutoff_depth(6), h=lambda s, p: 0):
         return v, move
 
     return max_value(state, -infinity, +infinity, 0)
+
+
+
 
 
 # In[16]:
