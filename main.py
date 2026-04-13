@@ -44,8 +44,12 @@ def play_peg_solitaire(searchType: int, board_shape='English', test=False, visua
 
 def play_peg_duotaire():
     peg_duo = PegDuotaire()
-    final_board = play_game(peg_duo, dict(X=random_player, O=random_player), verbose=True)
-    #final_board = play_game(peg_duo, dict(X=random_player, O=player(alphabeta_search)), verbose=True)  # take very long time for one step
+    # final_board = play_game(peg_duo, dict(X=random_player, O=random_player), verbose=True)
+    # final_board = play_game(peg_duo, dict(X=player(h_alphabeta_search), O=random_player), verbose=True)
+    # final_board = play_game(peg_duo, dict(X=player(monte_carlo_tree_search), O=random_player), verbose=True)
+    final_board = play_game(peg_duo, dict(X=player(monte_carlo_tree_search), O=player(h_alphabeta_search)), verbose=True)
+    # final_board = play_game(peg_duo, dict(X=random_player, O=player(minimax_search)), verbose=True)   # take very long time for one step
+    # final_board = play_game(peg_duo, dict(X=random_player, O=player(alphabeta_search)), verbose=True)  # take very long time for one step
     print(f'Utility of X is: {peg_duo.utility(final_board, "X")}')
 
 def main():
