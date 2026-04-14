@@ -2,6 +2,7 @@
 
 from peg_board import *
 from search4e import *
+from visualize_search import *
 import copy
 import time
 
@@ -162,16 +163,62 @@ def test_board(peg_sol):
         print('After performing ', actions[0], '\n', board)
         actions = peg_sol.actions(board)
 
+"""    {'depth_first_bfs': {
+        'Triangle': {
+            'time_ms': 6.856707972474396,
+            'counts': Counter(
+                {'result': 494, 'action_cost': 494, 'actions': 265, 'is_goal': 253, 'cost': 13, 'initial': 2})
+        },
+        'English': {
+            'time_ms': 29.019667010288686,
+            'counts': Counter(
+                {'result': 2509, 'action_cost': 2509, 'actions': 1123, 'is_goal': 1093, 'cost': 31,
+                 'initial': 2})},
+        'total_counts': Counter(
+            {'result': 3003, 'action_cost': 3003, 'actions': 1388, 'is_goal': 1346, 'cost': 44, 'initial': 4})},
+
+        'greedy_bfs': {'Triangle': {'time_ms': 1.021541014779359, 'counts': Counter(
+            {'result': 106, 'action_cost': 106, 'actions': 64, 'is_goal': 52, 'cost': 13, 'initial': 2, 'h': 1})},
+                       'English': {'time_ms': 158.05516595719382, 'counts': Counter(
+                           {'result': 32970, 'action_cost': 32970, 'actions': 7382, 'is_goal': 7352, 'cost': 31,
+                            'initial': 2, 'h': 1})}, 'total_counts': Counter(
+                {'result': 33076, 'action_cost': 33076, 'actions': 7446, 'is_goal': 7404, 'cost': 44, 'initial': 4,
+                 'h': 2})}, 'astar_search': {'Triangle': {'time_ms': 2.0253750262781978, 'counts': Counter(
+        {'result': 269, 'action_cost': 269, 'actions': 67, 'is_goal': 55, 'cost': 13, 'initial': 2, 'h': 1})},
+                                             'English': {'time_ms': 362.2325420146808, 'counts': Counter(
+                                                 {'result': 72707, 'action_cost': 72707, 'actions': 14309,
+                                                  'is_goal': 14279, 'cost': 31, 'initial': 2, 'h': 1})},
+                                             'total_counts': Counter(
+                                                 {'result': 72976, 'action_cost': 72976, 'actions': 14376,
+                                                  'is_goal': 14334, 'cost': 44, 'initial': 4, 'h': 2})}}
+"""
 def test_performance(searchers, shapes, verbose=True):
     """Show summary statistics for each searcher (and on each problem unless verbose is false)."""
+    results = {}
     for searcher in searchers:
-        print(f'\n{searcher.__name__}:')
+        name = searcher.__name__
+        results[name] = {}
+        print(f'\n{name}:')
+
         total_counts = Counter()
         for shape in shapes:
             problem = PegSolitaire(shape=shape)
             time_ms, counts = run_search(searcher, problem)
+
+            results[name][shape] = {
+                'time_ms': time_ms,
+                'counts': counts.copy()
+            }
+
             total_counts += counts
-            if verbose: print_time_counts(time_ms, counts, str(problem)[:12] + ' ' + problem.shape)
+
+            if verbose:
+                print_time_counts(time_ms, counts, str(problem)[:12] + ' ' + problem.shape)
+
+        # results[name]['total_counts'] = total_counts
+
+    compare_search_algorithms(results)
+    return results
 
 def test_data_structures():
     return

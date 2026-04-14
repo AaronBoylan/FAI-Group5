@@ -78,7 +78,7 @@ class PegBoardInt:
         if hasattr(self, "_canon"):
             return self._canon
         s = self.state
-        maps = self.__class__.SYM_MAPS
+        maps = getattr(self.__class__, 'SYM_MAPS', None)
         if not maps:  #check if symmetry maps are generated
             self._canon = s     #if not, return the state as is
             return s
@@ -211,7 +211,7 @@ class EnglishPegBoardInt(PegBoardInt):
     GOAL_INDEX = 16
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 7
-    DIRECTIONS = [(0, -1), (1, 0), (-1, 0), (0, 1), ] # West, South, North, East
+    DIRECTIONS = [(0, -1), (1, 0), (-1, 0), (0, 1)] # West, South, North, East
     MOVES = []
     SYM_MAPS = []
 
@@ -221,10 +221,6 @@ class EnglishPegBoardInt(PegBoardInt):
             self.gen_moves()
         if not self.SYM_MAPS:
             self.gen_symmetry_maps()
-
-    # @property
-    # def DIRECTIONS(self): #North, South, East, West
-    #     return [(-1, 0), (1, 0), (0, 1), (0, -1)]
 
     def gen_moves(self):
         INDEX_MAP = self.INDEX_MAP
@@ -324,30 +320,24 @@ class TrianglePegBoardInt(PegBoardInt):
         (4, 0): 10, (4, 1): 11, (4, 2): 12, (4, 3): 13, (4, 4): 14
     }
     PAGODA = [
-            
                 4,
                 3, 3,
                 2, 2, 2,
                 1, 1, 1, 1,
                 0, 0, 0, 0, 0
-
-            
     ]
     TOTAL_HOLES = 15
     INIT_INDEX = 0
     GOAL_INDEX = 0
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 5
+    DIRECTIONS = [(0, 1), (0, -1), (1, 1), (1, 0), (-1, 0), (-1, -1)]
     MOVES = []
 
     def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
         super().__init__(total_holes, init_hole, to_move)
         if not self.MOVES:
             self.gen_moves()
-
-    @property
-    def DIRECTIONS(self): #East, West, Southeast, Southwest, Northeast, Northwest
-        return [(0, 1), (0, -1), (1, 1), (1, 0), (-1, 0), (-1, -1)]
 
     def gen_moves(self):
         INDEX_MAP = self.INDEX_MAP
