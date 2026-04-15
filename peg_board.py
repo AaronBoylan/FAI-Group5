@@ -174,22 +174,6 @@ class EnglishPegBoardInt(PegBoardInt):
         (6, 2): 30, (6, 3): 31, (6, 4): 32
     }
     PAGODA = [
-          #       0, 0, 1,
-          #       0, 1, 0,
-          # 1, 0, 1, 0, 1, 0, 1,
-          # 0, 1, 0, 2, 0, 1, 0,
-          # 1, 0, 1, 0, 1, 0, 1,
-          #       0, 1, 0,
-          #       0, 0, 1
-          #
-          #       0, 0, 0,
-          #       0, 1, 0,
-          # 0, 0, 0, 0, 0, 0, 0,
-          # 0, 1, 0, 1, 0, 1, 0,
-          # 0, 0, 0, 0, 0, 0, 0,
-          #       0, 1, 0,
-          #       0, 0, 0
-          #
                 0, 0, 0,
                 0, 1, 0,
          -1, 1, 0, 1, 0, 1, -1,
@@ -197,14 +181,6 @@ class EnglishPegBoardInt(PegBoardInt):
          -1, 1, 0, 1, 0, 1, -1,
                 0, 1, 0,
                 0, 0, 0
-
-          #       0, 1, 0,
-          #       1, 0, 1,
-          # 0, 1, 0, 1, 0, 1, 0,
-          # 1, 0, 2, 0, 2, 0, 1,
-          # 0, 1, 0, 1, 0, 1, 0,
-          #       1, 0, 1,
-          #       0, 1, 0
     ]
     TOTAL_HOLES = 33
     INIT_INDEX = 16
@@ -301,6 +277,7 @@ class FrenchPegBoardInt(EnglishPegBoardInt):
     GOAL_INDEX = 16
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 7
+    DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # East, South, West, North
     MOVES = []
     SYM_MAPS = []
 
@@ -331,7 +308,7 @@ class TrianglePegBoardInt(PegBoardInt):
     GOAL_INDEX = 0
     GOAL_PAGODA = PAGODA[GOAL_INDEX]
     SIZE = 5
-    DIRECTIONS = [(0, 1), (0, -1), (1, 1), (1, 0), (-1, 0), (-1, -1)]
+    DIRECTIONS = [(0, 1), (1, 1), (-1, -1), (0, -1), (-1, 0), (1, 0)]  # East, Southeast, Northwest, West, Northeast, Southwest
     MOVES = []
 
     def __init__(self, total_holes=TOTAL_HOLES, init_hole=INIT_INDEX, to_move=None):
@@ -422,7 +399,7 @@ class PegBoardDict(defaultdict):
         return new_board
 
     #Public API
-    def actions(self):
+    def actions(self, reverse=False):
         """Return a collection of the allowable moves from this state.
         [((x1, y1), (x2, y2)), ((x3, y3), (x4, y4))] means moving from (x1, y1) to (x2, y2) and (x3, y3) to (x4, y4)"""
         actions = []
@@ -434,7 +411,7 @@ class PegBoardDict(defaultdict):
                     actions.append(((r, c), to))
         return actions
 
-    def result(self, move):
+    def result(self, move, reverse=False):
         """Return the state that results from making a move from a state."""
         new_board = self._clone()
         (i, j), (to_i, to_j) = move
@@ -451,7 +428,10 @@ class PegBoardDict(defaultdict):
         new_board.to_move = 'O' if self.to_move == 'X' else 'X'
         return new_board
 
-    def dead_count(self):
+    def check_pagoda(self, reverse=False):
+        return True
+
+    def count_isolated_pegs(self):
         dead = 0
         for (r, c) in self.pegs:
             movable = False
@@ -500,8 +480,8 @@ class TrianglePegBoardDict(PegBoardDict):
         super().__init__(width, height, init_hole, to_move)
 
     @property
-    def DIRECTIONS(self): #East, West, Southeast, Southwest, Northeast, Northwest
-        return [(0, 1), (0, -1), (1, 1), (1, 0), (-1, 0), (-1, -1)]
+    def DIRECTIONS(self): # East, Southeast, Northwest, West, Northeast, Southwest
+        return [(0, 1), (1, 1), (-1, -1), (0, -1), (-1, 0), (1, 0)]
 
     def _in_shape(self, i, j):
         return j <= i

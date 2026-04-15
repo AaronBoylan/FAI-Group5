@@ -27,7 +27,7 @@ def play_peg_solitaire(visualize=True):
 
     if visualize:
         plot_board_states(pathStates)
-        visualize_search_matlab(searchType, timeTaken, pathStates)
+        # visualize_search_matlab(searchType, timeTaken, pathStates)
 
     return
 
@@ -57,14 +57,14 @@ def test_peg_solitaire():
                  peg_bidirectional_astar_search, mcts_search),
                 ('Triangle', 'English', 'French'), verbose=True)
             # test_performance(
-            #     (astar_search, greedy_bfs, astar_search),
+            #     (astar_search, peg_bidirectional_astar_search),
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
             test_data_structures()
 
         case 3:
-            test_directions()
+            test_directions(depth_first_bfs, 'English')
 
         case 4:
             compare_search_algorithms()

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+import time
+import search4e
 from peg_board import *
 from search4e import *
 from visualize_search import *
-import copy
-import time
 
 class PegSolitaire(Problem):
     """PegSolitaire, a subclass of Problem, is used to find a solution to a Peg Solitaire puzzle.
@@ -83,17 +83,27 @@ class PegSolitaire(Problem):
             0.5 * self.h3(board)
         )
 
+class PegSolitaireDict(PegSolitaire):
+    """PegSolitaireDict class"""
+
+    def __init__(self, shape='English', reverse=False):
+        assert shape in ('English', 'French', 'Triangle')
+        self.shape = shape
+        if shape == 'English':
+            board = EnglishPegBoardDict()
+        # elif shape == 'French':
+        elif shape == 'Triangle':
+            board = TrianglePegBoardDict()
+
+        self.initial = board
+        self.goal = board.init_hole
+        self.reverse = reverse
+
 def peg_bidirectional_astar_search(problem_f):
     """Bidirectional A* search for Peg Solitaire."""
     problem_b = peg_inverse_problem(problem_f)
     return peg_bidirectional_best_first_search(problem_f, lambda n: g(n) + problem_f.h(n),
                                            problem_b, lambda n: g(n) + problem_b.h(n), peg_terminated)
-
-def peg_bidirectional_uniform_cost_search(problem_f):
-    """Bidirectional uniform-cost search."""
-    problem_b = peg_inverse_problem(problem_f)
-    return peg_bidirectional_best_first_search(problem_f, g,
-                                           problem_b, g, peg_terminated)
 
 def peg_bidirectional_best_first_search(problem_f, f_f, problem_b, f_b, peg_terminated):
     """Generic bidirectional best-first search."""
@@ -163,7 +173,7 @@ def test_board(peg_sol):
         print('After performing ', actions[0], '\n', board)
         actions = peg_sol.actions(board)
 
-"""    {'depth_first_bfs': {
+"""{'depth_first_bfs': {
         'Triangle': {
             'time_ms': 6.856707972474396,
             'counts': Counter(
@@ -172,27 +182,23 @@ def test_board(peg_sol):
         'English': {
             'time_ms': 29.019667010288686,
             'counts': Counter(
-                {'result': 2509, 'action_cost': 2509, 'actions': 1123, 'is_goal': 1093, 'cost': 31,
-                 'initial': 2})},
-        'total_counts': Counter(
-            {'result': 3003, 'action_cost': 3003, 'actions': 1388, 'is_goal': 1346, 'cost': 44, 'initial': 4})},
-
-        'greedy_bfs': {'Triangle': {'time_ms': 1.021541014779359, 'counts': Counter(
-            {'result': 106, 'action_cost': 106, 'actions': 64, 'is_goal': 52, 'cost': 13, 'initial': 2, 'h': 1})},
-                       'English': {'time_ms': 158.05516595719382, 'counts': Counter(
-                           {'result': 32970, 'action_cost': 32970, 'actions': 7382, 'is_goal': 7352, 'cost': 31,
-                            'initial': 2, 'h': 1})}, 'total_counts': Counter(
-                {'result': 33076, 'action_cost': 33076, 'actions': 7446, 'is_goal': 7404, 'cost': 44, 'initial': 4,
-                 'h': 2})}, 'astar_search': {'Triangle': {'time_ms': 2.0253750262781978, 'counts': Counter(
-        {'result': 269, 'action_cost': 269, 'actions': 67, 'is_goal': 55, 'cost': 13, 'initial': 2, 'h': 1})},
-                                             'English': {'time_ms': 362.2325420146808, 'counts': Counter(
-                                                 {'result': 72707, 'action_cost': 72707, 'actions': 14309,
-                                                  'is_goal': 14279, 'cost': 31, 'initial': 2, 'h': 1})},
-                                             'total_counts': Counter(
-                                                 {'result': 72976, 'action_cost': 72976, 'actions': 14376,
-                                                  'is_goal': 14334, 'cost': 44, 'initial': 4, 'h': 2})}}
+                {'result': 2509, 'action_cost': 2509, 'actions': 1123, 'is_goal': 1093, 'cost': 31, 'initial': 2})
+        },
+    },
+    'greedy_bfs': {
+        'Triangle': {
+            'time_ms': 1.021541014779359, 
+            'counts': Counter(
+                {'result': 106, 'action_cost': 106, 'actions': 64, 'is_goal': 52, 'cost': 13, 'initial': 2, 'h': 1})
+        },               
+        'English': {
+            'time_ms': 158.05516595719382, 
+            'counts': Counter(
+                {'result': 32970, 'action_cost': 32970, 'actions': 7382, 'is_goal': 7352, 'cost': 31,'initial': 2, 'h': 1})
+        }
+    }
 """
-def test_performance(searchers, shapes, verbose=True):
+def test_performance(searchers, shapes, verbose=False):
     """Show summary statistics for each searcher (and on each problem unless verbose is false)."""
     results = {}
     for searcher in searchers:
@@ -212,36 +218,100 @@ def test_performance(searchers, shapes, verbose=True):
 
             total_counts += counts
 
-            if verbose:
-                print_time_counts(time_ms, counts, str(problem)[:12] + ' ' + problem.shape)
+            print_time_counts(time_ms, counts, str(problem)[:12] + ' ' + problem.shape)
 
         # results[name]['total_counts'] = total_counts
 
-    compare_search_algorithms(results)
+    if verbose:
+        compare_search_algorithms(results)
+
     return results
 
 def test_data_structures():
-    return
+    from pympler import asizeof
+
+    # Define the Tracking Wrapper
+    original_PQ = search4e.PriorityQueue
+
+    class TrackingPriorityQueue(original_PQ):
+        # We'll use a class variable to keep track across the search
+        max_size = 0
+
+        def add(self, item):
+            super().add(item)
+            # Update the peak size whenever an item is added
+            TrackingPriorityQueue.max_size = max(TrackingPriorityQueue.max_size, len(self))
+
+        @classmethod
+        def reset_tracker(cls):
+            cls.max_size = 0
+
+    # Monkey Patch the global PriorityQueue
+    search4e.PriorityQueue = TrackingPriorityQueue
+
+    try:
+        # TEST 1: DefaultDict
+        print('Testing DefaultDict')
+
+        TrackingPriorityQueue.reset_tracker()
+
+        peg_sol_dict = PegSolitaireDict(shape='English')
+        time_ms, counts = run_search(astar_search, peg_sol_dict)
+
+        size = asizeof.asizeof(peg_sol_dict.initial.pegs)
+        max_nodes = TrackingPriorityQueue.max_size
+        throughput = counts['result']/(time_ms/1000)
+
+        print(f'State Size: {size} bytes')
+        print(f'Max Frontier Nodes: {max_nodes:,}')
+        print(f'Max Frontier Size: {size*max_nodes/(1024*1024):.2f} MB')
+        print(f'Throughput: {throughput:,.2f} (Nodes per Second)')
+        print_time_counts(time_ms, counts, 'Dict English')
+
+        # TEST 2: Bitmask
+        print('\nTesting Bitmask')
+
+        TrackingPriorityQueue.reset_tracker()
+
+        peg_sol = PegSolitaire(shape='English')
+        time_ms, counts = run_search(astar_search, peg_sol)
+
+        size = asizeof.asizeof(peg_sol.initial.state)
+        max_nodes = TrackingPriorityQueue.max_size
+        throughput = counts['result']/(time_ms/1000)
+
+        print(f'State Size: {size} bytes')
+        print(f'Max Frontier Nodes: {max_nodes:,}')
+        print(f'Max Frontier Size: {size*max_nodes/(1024*1024):.2f} MB')
+        print(f'Throughput: {throughput:,.2f} (Nodes per Second)')
+        print_time_counts(time_ms, counts, 'Bitmask English')
+
+    finally:
+        # Restore the original PriorityQueue to avoid side effects
+        search4e.PriorityQueue = original_PQ
 
 from itertools import permutations
 
 def test_directions(searcher, shape):
-    DIR = {'North': (-1, 0), 'South': (1, 0), 'East': (0, 1), 'West': (0, -1)}
-
     print(f'\n{searcher.__name__} on {shape} board')
 
-    if shape == 'English':
-        board = EnglishPegBoardInt
-    elif shape == 'French':
-        board = FrenchPegBoardInt
-    else:
-        board = TrianglePegBoardInt
+
+
+    if shape == 'English' or shape == 'French':
+        DIR = {'North': (-1, 0), 'South': (1, 0), 'East': (0, 1), 'West': (0, -1)}
+    elif shape == 'Triangle':
+        DIR = {'East': (0, 1), 'West': (0, -1), 'Southeast': (1, 1), 'Southwest': (1, 0), 'Northeast': (-1, 0), 'Northwest': (-1, -1)}
 
     for names in permutations(DIR.keys()):
         directions = [DIR[n] for n in names]
-        board.DIRECTIONS = directions
 
         problem = PegSolitaire(shape=shape)
+        problem.initial.DIRECTIONS = directions
+        problem.initial.__class__.MOVES = []
+        problem.initial.gen_moves()
+
+        # print(problem.initial.MOVES)
+
         time_ms, counts = run_search(searcher, problem)
         print_time_counts(time_ms, counts, f'{shape} {list(names)}')
 

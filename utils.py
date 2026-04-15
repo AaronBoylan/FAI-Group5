@@ -84,7 +84,7 @@ TESTING_MENUS = {
         'method': test_performance
     },
     2: {
-        'name': "Compare Performance of Different Data Structures",
+        'name': "Compare Performance of Dict and Bitmask Data Structures",
         'short_name': "test_data_structures",
         'method': test_data_structures
     },
