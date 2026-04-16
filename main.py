@@ -1,77 +1,87 @@
 #!/usr/bin/env python3
-
 from peg_solitaire import *
 from peg_duotaire import *
 from peg_board import *
+from visualize_search import *
 from search4e import *
 from games4e import *
 from utils import *
 import time
 
 
-def play_peg_solitaire(searchType: int, board_shape='English', test=False, visualize=False) -> tuple:
-    #return tuple for compatiblity with multiple return values
-    peg_sol = PegSolitaire(shape=board_shape)
-    # peg_sol = PegSolitaire(shape='Triangle')
-    # peg_sol = PegSolitaire(shape='French')
+def play_peg_solitaire(visualize=True):
+    menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
+    shape = int(input(f"Select peg board shape: \n{menu_options}\n"))
 
-    startTime = time.time()
-    pathStates = []
-    
+    peg_sol = PegSolitaire(shape=PEG_BOARDS[shape]['method'])
+
+    menu_options = "\n".join([f"{k}. {v['name']}" for k, v in SEARCH_ALGORITHMS.items()])
+    searchType = int(input(f"Select search type: \n{menu_options}\n"))
+
+    startTime = time.time_ns()
+
     #search_methods.get(searchType) is a function, so we need to call it with the arguments
     pathStates = path_states(search_methods.get(searchType)(peg_sol))
         
-    if not test:
-        print(f"Running {search_names.get(searchType)}...")
+    timeTaken = (time.time_ns() - startTime) / 1_000_000
 
-    if not test:
-        counter = 0
-        for s in pathStates:
-            print(f'Step {counter}:')
-            print(s)
-            print("\n")
-            counter += 1
-    timeTaken = time.time() - startTime
-    #print(f"Turns taken: {len(pathStates)}")
-    if not test:
-        print(f"Time taken: {timeTaken:.2f} seconds")
-
-    #if visualize value return the tuple with additional data elments for plots
     if visualize:
-        return timeTaken, pathStates, search_methods.get(searchType)(peg_sol)
-    #standard return of time    
-    return timeTaken
+        plot_board_states(pathStates)
+        # visualize_search_matlab(searchType, timeTaken, pathStates)
+
+    return
 
 def play_peg_duotaire():
-    peg_duo = PegDuotaire()
-    # final_board = play_game(peg_duo, dict(X=random_player, O=random_player), verbose=True)
-    # final_board = play_game(peg_duo, dict(X=player(h_alphabeta_search), O=random_player), verbose=True)
-    # final_board = play_game(peg_duo, dict(X=player(monte_carlo_tree_search), O=random_player), verbose=True)
-    final_board = play_game(peg_duo, dict(X=player(monte_carlo_tree_search), O=player(h_alphabeta_search)), verbose=True)
-    # final_board = play_game(peg_duo, dict(X=random_player, O=player(minimax_search)), verbose=True)   # take very long time for one step
-    # final_board = play_game(peg_duo, dict(X=random_player, O=player(alphabeta_search)), verbose=True)  # take very long time for one step
+    menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
+    shape = int(input(f"Select peg board shape: \n{menu_options}\n"))
+
+    peg_duo = PegDuotaire(shape=PEG_BOARDS[shape]['method'])
+
+    menu_options = "\n".join([f"{k}. {v['name']}" for k, v in GAME_PLAYERS.items()])
+    player1 = int(input(f"Select player #1: \n{menu_options}\n"))
+    player2 = int(input(f"Select player #2: \n{menu_options}\n"))
+
+    final_board = play_game(peg_duo, dict(X=GAME_PLAYERS[player1]['method'],
+                                          O=GAME_PLAYERS[player2]['method']), verbose=True)
+
     print(f'Utility of X is: {peg_duo.utility(final_board, "X")}')
+
+def test_peg_solitaire():
+    menu_options = "\n".join([f"{k}. {v['name']}" for k, v in TESTING_MENUS.items()])
+    testType = int(input(f"Select test type: \n{menu_options}\n"))
+
+    match testType:
+        case 1:
+            test_performance(
+                (depth_first_bfs, greedy_bfs, astar_search,
+                 peg_bidirectional_astar_search, mcts_search),
+                ('Triangle', 'English', 'French'), verbose=True)
+            # test_performance(
+            #     (astar_search, peg_bidirectional_astar_search),
+            #     ('Triangle', 'English', 'French'), verbose=True)
+
+        case 2:
+            test_data_structures()
+
+        case 3:
+            test_directions(depth_first_bfs, 'English')
+
+        case 4:
+            compare_search_algorithms()
 
 def main():
     userInput = int(input("Enter 1 to play Peg Solitaire, or 2 to play Peg Duotaire, or 3 to run test bench: "))
     match userInput:
         case 1:
-            #Replaced below with the menu from SEARCH_ALGORITHMS in utils.py
-            #            searchType = int(input("Select search type: \n" \
-            #                       "1. Depth-First Search\n" \
-            #                        "2. A* Search\n" \
-            #                        "3. Greedy Best-First Search\n" \
-            #                        "4. Bidirectional A* Search\n"))
-
             # Generate menu from SEARCH_ALGORITHMS in utils.py
-            menu_options = "\n".join([f"{k}. {v['name']}" for k, v in SEARCH_ALGORITHMS.items()])
-            searchType = int(input(f"Select search type: \n{menu_options}\n"))
-            play_peg_solitaire(searchType)
+            play_peg_solitaire(visualize=True)
+
         case 2:
             play_peg_duotaire()
+
         case 3:
-            from testBench import testBench
-            testBench()
+            test_peg_solitaire()
+
         case _:
             print("Invalid input. Please enter 1 or 2.")
 

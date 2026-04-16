@@ -3,8 +3,27 @@
 from peg_solitaire import *
 from peg_duotaire import *
 from peg_board import *
+# from visualize_search import *
 from search4e import *
 from games4e import *
+
+PEG_BOARDS = {
+    1: {
+        'name': "Triangle Peg Board (15 Holes)",
+        'short_name': "Triangle",
+        'method': "Triangle"
+    },
+    2: {
+        'name': "English Peg Board (33 Holes)",
+        'short_name': "English",
+        'method': "English"
+    },
+    3: {
+        'name': "French Peg Board (37 Holes)",
+        'short_name': "French",
+        'method': "French"
+    }
+}
 
 # Centralized search algorithms configuration
 SEARCH_ALGORITHMS = {
@@ -36,6 +55,24 @@ SEARCH_ALGORITHMS = {
     
 }
 
+GAME_PLAYERS = {
+    1: {
+        'name': "Random Player",
+        'short_name': "random_player",
+        'method': random_player
+    },
+    2: {
+        'name': "AlphaBeta Player",
+        'short_name': "h_alphabeta_search",
+        'method': player(h_alphabeta_search)
+    },
+    3: {
+        'name': "MCTS Player",
+        'short_name': "mcts",
+        'method': player(monte_carlo_tree_search)
+    }
+}
+
 # Backward compatibility - maintain existing dictionaries
 search_methods = {k: v['method'] for k, v in SEARCH_ALGORITHMS.items()}
 search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
@@ -47,7 +84,7 @@ TESTING_MENUS = {
         'method': test_performance
     },
     2: {
-        'name': "Compare Performance of Different Data Structures",
+        'name': "Compare Performance of Dict and Bitmask Data Structures",
         'short_name': "test_data_structures",
         'method': test_data_structures
     },
