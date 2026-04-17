@@ -111,7 +111,6 @@ class PriorityQueue:
 # 
 # Best-first search with various *f(n)* functions gives us different search algorithms. Note that A\*, weighted A\* and greedy search can be given a heuristic function, `h`, but if `h` is not supplied they use the problem's default `h` function (if the problem does not define one, it is taken as *h(n)* = 0).
 
-
 def best_first_search(problem, f):
     "Search nodes with minimum f(node) value first."
     global reached # <<<<<<<<<<< Only change here
