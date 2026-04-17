@@ -4,8 +4,6 @@
     -For Duotaire
         - Get non-random players in duotaire working
         - Minimax player
-        - MCTS player
-        - interactive human player
 
     -For Solitaire
         - Algorithm comparison
@@ -17,7 +15,9 @@
 ## In progress
 
 ## Completed
-    - [x] Example completed task
+    - Duotaire interactive human player
+    - MCTS player
+
 
 ## Stretch goals
     - Graphical gameplay for duotaire

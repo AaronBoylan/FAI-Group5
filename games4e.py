@@ -12,6 +12,7 @@ import random
 import math
 import functools
 import numpy as np
+from peg_board import *
 cache = functools.lru_cache(10**6)
 
 class Game:
@@ -38,7 +39,7 @@ class Game:
         raise NotImplementedError
 
 
-def play_game(game, strategies: dict, verbose=False):
+def play_game(game, strategies: dict, verbose=False, user_player=False):
     """Play a turn-taking game. `strategies` is a {player_name: function} dict,
     where function(state, game) is used to get the player's move."""
     state = game.initial
@@ -47,8 +48,21 @@ def play_game(game, strategies: dict, verbose=False):
         move = strategies[player](game, state)
         state = game.result(state, move)
         if verbose: 
-            print('Player', player, 'move:', move)
-            print(state)
+            if user_player:
+                "Player X is the user, while Player 0 is the computer."
+                action = move[0].bit_length() - 1, move[1].bit_length() - 1, move[2].bit_length() - 1
+
+                if player != 'X':
+                    action = move[0].bit_length() - 1, move[1].bit_length() - 1, move[2].bit_length() - 1
+                    print('\nPlayer', player, 'move(From, Over, To):', action)
+                    print(state)
+                else:
+                    print('\nYour move(From, Over, To):', action)
+                    print(state)
+            else:    
+                action = move[0].bit_length() - 1, move[1].bit_length() - 1, move[2].bit_length() - 1
+                print('\nPlayer', player, 'move (From, Over, To):', action)
+                print(state)
     return state
 
 
@@ -56,6 +70,22 @@ infinity = math.inf
 
 
 def random_player(game, state): return random.choice(list(game.actions(state)))
+
+def user_player(game, state):
+    "Player with choices determined by user input."
+    move = None
+    x = 1
+    while move not in game.actions(state):
+        print("\nCurrent board:")
+        print(state)
+        print()
+        for f, o, t, _ in game.actions(state):
+            action = f.bit_length() - 1, o.bit_length() - 1, t.bit_length() - 1
+            print(f'{x}. Action(from, over, to): {action}')
+            x += 1
+        user_input = input("Your move? ")
+        move = game.actions(state)[int(user_input) - 1]
+    return move
 
 def player(search_algorithm):
     """A game player who uses the specified search algorithm"""
