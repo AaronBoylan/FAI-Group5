@@ -1,23 +1,20 @@
 # FAI-Group5 To-Do List
 
 ## To-do 
-    -For Duotaire
-        - Get non-random players in duotaire working
-        - Minimax player
-
     -For Solitaire
         - Algorithm comparison
-        - Run heuristics individually and compare
+        - Run heuristics individually and compare    
 
+## In progress
     - Work on report
     - Work on powerpoint
 
-## In progress
-
 ## Completed
+    - Get non-random players in duotaire working
     - Duotaire interactive human player
     - MCTS player
+    - Graphical gameplay for duotaire
 
 
 ## Stretch goals
-    - Graphical gameplay for duotaire
+    - Minimax player
