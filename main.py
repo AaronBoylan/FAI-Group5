@@ -5,6 +5,7 @@ from peg_board import *
 from visualize_search import *
 from search4e import *
 from games4e import *
+from gui import *
 from utils import *
 import time
 
@@ -118,4 +119,7 @@ def main():
             print("Invalid input. Please enter 1 or 2.")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--gui':
+        main_gui()
+    else:
+        main()

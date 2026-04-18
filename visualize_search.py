@@ -96,7 +96,7 @@ def visualize_search_matlab(searchType, timeTaken, pathStates):
 
     # return timeTaken, pathStates, solution
 
-def plot_board_states(pathStates, max_states=2):
+def plot_board_states(pathStates, max_states=2, duo=False, player1=None, player2=None):
     # Plot actual board states at different steps using ASCII-like visualization.
     def _format_board_for_display(state):
         board_str = str(state)
@@ -138,7 +138,14 @@ def plot_board_states(pathStates, max_states=2):
         # Clear the axis
         axes[i].clear()
         axes[i].axis('off')
-        axes[i].set_title(f'Step {idx}')
+        if i == 0:
+            axes[i].set_title('Initial State')
+        else:
+            if not duo:
+                axes[i].set_title(f'Step {idx}')
+            else:
+                player_name = 'Player ' + (player1 if idx % 2 == 1 else player2)
+                axes[i].set_title(player_name)
 
         # Display the board as text
         axes[i].text(0.5, 0.5, board_str,
@@ -223,8 +230,8 @@ def compare_search_algorithms(results):
 def plot_one_board(shape, results, ax1, ax2):
     algs = list(results.keys())
 
-    times = [results[a][shape]['time_ms'] for a in algs]
-    nodes = [results[a][shape]['counts']['result'] for a in algs]
+    times = [results[a][shape]['time_ms'] for a in algs if shape in results[a]]
+    nodes = [results[a][shape]['counts']['result'] for a in algs if shape in results[a]]
 
     # Time
     ax1.bar(algs, times)
