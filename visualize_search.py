@@ -184,7 +184,7 @@ def compare_search_algorithms(results):
     # Create comparison plots
     fig, ((ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8)) = plt.subplots(2, 4, figsize=(20, 10))
 
-    plot_one_searcher('astar_search', results, ax1, ax5)
+    plot_one_searcher('A*', results, ax1, ax5)
     plot_one_board('Triangle', results, ax2, ax6)
     plot_one_board('English', results, ax3, ax7)
     plot_one_board('French', results, ax4, ax8)

@@ -33,14 +33,14 @@ SEARCH_ALGORITHMS = {
         'method': depth_first_bfs
     },
     2: {
-        'name': "A* Search",
-        'short_name': "A*",
-        'method': astar_search
-    },
-    3: {
         'name': "Greedy Best-First Search",
         'short_name': "Greedy BFS",
         'method': greedy_bfs
+    },
+    3: {
+        'name': "A* Search",
+        'short_name': "A*",
+        'method': astar_search
     },
     4: {
         'name': "Bidirectional A* Search",

@@ -127,7 +127,6 @@ def main_gui():
                     # print(f'Launch Duotaire: {states["duo_board"]} / {states["duo_p1"]} / {states["duo_p2"]}')
                     has_user_player = (states['duo_p1'] == 'User') or (states['duo_p2'] == 'User')
                     if has_user_player and (states['duo_board'] != 'English'):
-                        # messagebox.showwarning("Unsupported Mode", "Interactive play is only supported on the English Board.")
                         draw_warning_overlay(screen, "Interactive play is only supported on the English Board.")
                         continue
 
@@ -140,21 +139,19 @@ def main_gui():
                         return next((v['method'] for v in GAME_PLAYERS.values()
                                      if v['short_name'] == short_name), None)
 
-                    p1 = get_logic('duo_p1')
-                    p2 = get_logic('duo_p2')
+                    p1, p2 = get_logic('duo_p1'), get_logic('duo_p2')
+                    if not (p1 and p2):
+                        continue
 
-                    if p1 and p2:
-                        if has_user_player:
-                            final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, screen=screen, draw_board=draw_board)
-                        else:
-                            pathStates = []
-                            final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, pathState=pathStates)
-                            plot_board_states(pathStates, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
+                    if has_user_player:
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, screen=screen, draw_board=draw_board)
+                    else:
+                        pathStates = []
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, pathState=pathStates)
+                        plot_board_states(pathStates, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
 
-                        if peg_duo.utility(final_board, 'X') == 1:
-                            print(f'Winner: Player X ({states["duo_p1"]})')
-                        else:
-                            print(f'Winner: Player O ({states["duo_p2"]})')
+                    winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
+                    draw_warning_overlay(screen, f"Winner: {winner}")
 
                 # if launch_test.collidepoint(event.pos):
                 #
@@ -318,9 +315,9 @@ def wrap_text(text, font, max_width):
 
 
 def draw_warning_overlay(screen, message):
-    # 1. Setup Fonts & Colors
-    title_font = pygame.font.SysFont('Arial', 20, bold=True)
-    msg_font = pygame.font.SysFont('Arial', 18)
+    # Setup Fonts & Colors
+    title_font = pygame.font.SysFont('Arial', 18, bold=True)
+    msg_font = pygame.font.SysFont('Arial', 16)
 
     # UI Colors
     bg_color = (255, 255, 255)
@@ -328,41 +325,40 @@ def draw_warning_overlay(screen, message):
     text_color = (40, 40, 40)
     button_color = (0, 122, 255)  # macOS Blue
 
-    # 2. Dimensions & Centering
-    width, height = 450, 220  # Increased height slightly for better spacing
+    # Dimensions & Centering
+    width, height = 320, 150  # Increased height slightly for better spacing
     rect = pygame.Rect((screen.get_width() - width) // 2, (screen.get_height() - height) // 2, width, height)
 
-    # 3. Background Dimming (This makes it look much better/less "ugly")
+    # Background Dimming (This makes it look much better/less "ugly")
     overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
-    overlay.fill((0, 0, 0, 140))  # Semi-transparent black
+    overlay.fill((0, 0, 0, 120))  # Semi-transparent black
     screen.blit(overlay, (0, 0))
 
-    # 4. Draw the actual Dialog
     # Draw Shadow
-    pygame.draw.rect(screen, (0, 0, 0, 40), rect.move(4, 4), border_radius=12)
+    pygame.draw.rect(screen, (0, 0, 0, 40), rect.move(3, 3), border_radius=10)
     # Main Surface
-    pygame.draw.rect(screen, bg_color, rect, border_radius=12)
-    pygame.draw.rect(screen, border_color, rect, width=1, border_radius=12)
+    pygame.draw.rect(screen, bg_color, rect, border_radius=10)
+    pygame.draw.rect(screen, border_color, rect, width=1, border_radius=10)
 
     # Render Header
-    title_surf = title_font.render("Unsupported Mode", True, (0, 0, 0))
-    screen.blit(title_surf, (rect.x + 25, rect.y + 25))
+    # title_surf = title_font.render("Unsupported Mode", True, (0, 0, 0))
+    # screen.blit(title_surf, (rect.x + 25, rect.y + 25))
 
     # Render Wrapped Message
-    wrapped_lines = wrap_text(message, msg_font, width - 50)
+    wrapped_lines = wrap_text(message, msg_font, width - 30)
     for i, line in enumerate(wrapped_lines):
         line_surf = msg_font.render(line, True, text_color)
-        screen.blit(line_surf, (rect.x + 25, rect.y + 70 + (i * 28)))
+        screen.blit(line_surf, (rect.x + 15, rect.y + 30 + (i * 22)))
 
     # Draw "OK" Button
-    btn_rect = pygame.Rect(rect.centerx - 40, rect.bottom - 60, 80, 35)
-    pygame.draw.rect(screen, button_color, btn_rect, border_radius=8)
+    btn_rect = pygame.Rect(rect.centerx - 35, rect.bottom - 45, 70, 28)
+    pygame.draw.rect(screen, button_color, btn_rect, border_radius=6)
     btn_text = title_font.render("OK", True, (255, 255, 255))
     screen.blit(btn_text, btn_text.get_rect(center=btn_rect.center))
 
     pygame.display.flip()
 
-    # 5. Modal Loop (Wait for OK click)
+    # Modal Loop (Wait for OK click)
     while True:
         event = pygame.event.wait()
         if event.type == pygame.QUIT:

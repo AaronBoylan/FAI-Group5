@@ -449,7 +449,8 @@ class PegBoardDict(defaultdict):
         return dict(self) == dict(other)
 
     def __hash__(self):
-        return hash(tuple(sorted(self.items())))
+        # return hash(tuple(sorted(self.items())))
+        return hash(frozenset(self.items()))
 
     def __missing__(self, key):
         i, j = key

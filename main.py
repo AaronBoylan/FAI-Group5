@@ -64,13 +64,15 @@ def test_peg_solitaire():
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
-            test_data_structures()
+            print('test duotaire TBD')
 
         case 3:
-            test_directions(depth_first_bfs, 'English')
+            test_data_structures()
 
         case 4:
-            compare_search_algorithms()
+            test_directions(depth_first_bfs, 'Triangle')
+            test_directions(depth_first_bfs, 'English')
+            test_directions(depth_first_bfs, 'French')
 
 def user_plays():
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
