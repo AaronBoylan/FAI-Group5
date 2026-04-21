@@ -144,11 +144,11 @@ def main_gui():
                         continue
 
                     if has_user_player:
-                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, screen=screen, draw_board=draw_board)
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False)
                     else:
                         pathStates = []
-                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, pathState=pathStates)
-                        plot_board_states(pathStates, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, state_history=pathStates)
+                        plot_board_states(pathStates)
 
                     winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
                     draw_warning_overlay(screen, f"Winner: {winner}")
