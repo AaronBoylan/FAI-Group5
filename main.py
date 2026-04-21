@@ -5,6 +5,7 @@ from peg_board import *
 from visualize_search import *
 from search4e import *
 from games4e import *
+from gui import *
 from utils import *
 import time
 
@@ -21,13 +22,13 @@ def play_peg_solitaire(visualize=True):
     startTime = time.time_ns()
 
     #search_methods.get(searchType) is a function, so we need to call it with the arguments
-    pathStates = path_states(search_methods.get(searchType)(peg_sol))
+    state_history = path_states(search_methods.get(searchType)(peg_sol))
         
     timeTaken = (time.time_ns() - startTime) / 1_000_000
 
     if visualize:
-        plot_board_states(pathStates)
-        # visualize_search_matlab(searchType, timeTaken, pathStates)
+        plot_board_states(state_history)
+        # visualize_search_matlab(searchType, timeTaken, state_history)
 
     return
 
@@ -41,12 +42,12 @@ def play_peg_duotaire(visualize=True):
     player1 = int(input(f"Select player #1: \n{menu_options}\n"))
     player2 = int(input(f"Select player #2: \n{menu_options}\n"))
 
-    path_states = [] if visualize else None
+    state_history = [] if visualize else None
     final_board = play_game(
         peg_duo,
         dict(X=GAME_PLAYERS[player1]['method'], O=GAME_PLAYERS[player2]['method']),
         verbose=True,
-        state_history=path_states,
+        state_history=state_history,
     )
     if peg_duo.utility(final_board, "X") == 1:
         print(f"Player X ({GAME_PLAYERS[player1]['name']}) wins!")
@@ -54,7 +55,7 @@ def play_peg_duotaire(visualize=True):
         print(f"Player O ({GAME_PLAYERS[player2]['name']}) wins!")
     if visualize:
         print(f"Visualizing {GAME_PLAYERS[player1]['name']} vs {GAME_PLAYERS[player2]['name']}...")
-        plot_board_states(path_states)
+        plot_board_states(state_history)
 
 def test_peg_solitaire():
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in TESTING_MENUS.items()])
@@ -126,4 +127,7 @@ def main():
             print("Invalid input. Please enter 1 or 2.")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--gui':
+        main_gui()
+    else:
+        main()

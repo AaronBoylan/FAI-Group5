@@ -2,7 +2,7 @@
 import copy
 import math
 
-from games4e import Game
+from games4e import Game, minmax_decision
 from peg_board import *
 from peg_solitaire import PegSolitaire
 from search4e import astar_search, failure, greedy_bfs
@@ -116,11 +116,9 @@ def duotaire_greedy_bfs_search(game, state):
 
 
 def duotaire_minimax_search(game, state):
-    """Minimax Duotaire policy (for player() in games4e).
+    """Full-depth minimax Duotaire policy (for player() in games4e).
 
-    Adapter around games4e.minmax_decision, which returns a move (not (score, move)).
+    games4e.minmax_decision returns a move (not (score, move)).
     Returns (0, move): player() only uses the move at index 1.
     """
-    # Local import avoids potential import-order/circular-import issues.
-    from games4e import minmax_decision
     return (0, minmax_decision(state, game))

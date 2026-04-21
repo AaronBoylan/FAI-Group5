@@ -120,8 +120,8 @@ def main_gui():
                     peg_sol = PegSolitaire(shape=states['sol_board'])
                     search_method = next((v['method'] for v in SEARCH_ALGORITHMS.values() if v['short_name'] == states["sol_alg"]), None)
                     if search_method:
-                        pathStates = path_states(search_method(peg_sol))
-                        plot_board_states(pathStates)
+                        state_history = path_states(search_method(peg_sol))
+                        plot_board_states(state_history)
 
                 if launch_duo.collidepoint(event.pos):
                     # print(f'Launch Duotaire: {states["duo_board"]} / {states["duo_p1"]} / {states["duo_p2"]}')
@@ -144,11 +144,22 @@ def main_gui():
                         continue
 
                     if has_user_player:
-                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False)
+                        final_board = play_game(
+                            peg_duo,
+                            {'X': p1, 'O': p2},
+                            verbose=False,
+                            screen=screen,
+                            draw_board=draw_board,
+                        )
                     else:
-                        pathStates = []
-                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, state_history=pathStates)
-                        plot_board_states(pathStates)
+                        state_history = []
+                        final_board = play_game(
+                            peg_duo,
+                            {'X': p1, 'O': p2},
+                            verbose=False,
+                            state_history=state_history,
+                        )
+                        plot_board_states(state_history)
 
                     winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
                     draw_warning_overlay(screen, f"Winner: {winner}")
