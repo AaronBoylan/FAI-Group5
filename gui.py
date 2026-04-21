@@ -170,7 +170,7 @@ def main_gui():
                             verbose=False,
                             state_history=state_history,
                         )
-                        plot_board_states(state_history)
+                        plot_board_states(state_history, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
 
                     winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
                     draw_warning_overlay(screen, f"Winner: {winner}")
