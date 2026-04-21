@@ -39,20 +39,31 @@ class Game:
         raise NotImplementedError
 
 
-def play_game(game, strategies: dict, verbose=False, user_player=False, state_history=None):
+def play_game(game, strategies: dict, verbose=False, user_player=False, screen=None, draw_board=None, pathState=None):
     """Play a turn-taking game. `strategies` is a {player_name: function} dict,
     where function(state, game) is used to get the player's move.
     --If `state_history` is a list, append the initial state, then the state after
     each ply, for replay or visualization."""
     state = game.initial
-    if state_history is not None:
-        state_history.append(state)
+
+    if pathState is not None:
+        pathState.append(state)
+
     while not game.is_terminal(state):
         player = state.to_move
         move = strategies[player](game, state)
         state = game.result(state, move)
-        if state_history is not None:
-            state_history.append(state)
+
+        if pathState is not None:
+            pathState.append(state)
+
+            # GUI UPDATE
+        if screen and draw_board:
+            draw_board(screen, state.state)
+
+            import pygame
+            pygame.time.wait(1000)
+
         if verbose: 
             if user_player:
                 "Player X is the user, while Player 0 is the computer."
