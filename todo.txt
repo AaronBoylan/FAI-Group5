@@ -4,7 +4,7 @@
     -For Duotaire
         - Get non-random players in duotaire working -JG check this and they seem to work
                                                       - JG added A* and gready BFS
-        - Minimax player
+        - Minimax player                            -JG implemented minimax from the games4e.py 
 
     -For Solitaire
         - Algorithm comparison

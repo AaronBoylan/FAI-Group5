@@ -81,6 +81,12 @@ GAME_PLAYERS = {
         'short_name': "greedy_bfs_duotaire",
         'method': player(duotaire_greedy_bfs_search)
     }
+    ,
+    6: {
+        'name': "Minimax Player (Full Depth) (***Warning very slow on English and French boards***)",
+        'short_name': "minimax_decision",
+        'method': player(duotaire_minimax_search)
+    }
 }
 
 # Backward compatibility - maintain existing dictionaries
