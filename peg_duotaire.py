@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
+import copy
+import math
+
 from games4e import *
 from peg_board import *
+from peg_solitaire import PegSolitaire
+from search4e import astar_search, failure, greedy_bfs
 
 class PegDuotaire(Game):
     """PegDuotaire, a subclass of Game, represents one player in a Peg Duotaire game."""
@@ -52,3 +57,59 @@ class PegDuotaire(Game):
             return -1
         else:
             return 1
+
+
+def _board_for_solitaire_search(board):
+    """Detach Duotaire turn metadata; refresh pagoda for PegSolitaire search.
+    Safely detach the board from the Duotaire game. for analysis without modifying the original board.
+    """
+    b = copy.copy(board) #copy the board
+    b.__dict__.pop("_canon", None) #remove the canonical representation of the board
+    b.__dict__.pop("_hash", None) #remove the hash of the board (to avoid hash collisions)
+    b.pagoda = b.compute_pagoda(b.state) #compute the pagoda of the board
+    return b
+
+
+def _solitaire_path_cost(game, board_after_move, searcher): 
+    """Cost of a solitaire solution from this layout, or inf if none found."""
+    problem = PegSolitaire(shape=game.shape) #create a new PegSolitaire problem
+    problem.initial = _board_for_solitaire_search(board_after_move)
+    node = searcher(problem)
+    if node is failure: #if no solution is found, return infinity
+        return math.inf
+    return node.path_cost
+
+
+def _duotaire_search_pick_move(game, state, searcher):
+    """Choose a jump that minimizes solitaire solution length, then opponent mobility."""
+    actions = list(game.actions(state))
+    if not actions:
+        raise ValueError("No legal moves from this state.")
+    best_move = None
+    best_key = None
+    for a in actions: #check all moves and pick the best one
+        nxt = game.result(state, a)
+        cost = _solitaire_path_cost(game, nxt, searcher)
+        opp_moves = len(game.actions(nxt))
+        key = (cost, opp_moves)
+        if best_key is None or key < best_key: #if the key is better than the best key, update the best key and the best move
+            best_key, best_move = key, a
+    return best_move
+
+
+def duotaire_astar_search(game, state):
+    """ move from A* on PegSolitaire per successor."""
+    return (0, _duotaire_search_pick_move(game, state, astar_search))
+
+
+def duotaire_greedy_bfs_search(game, state):
+    """Greedy-BFS Duotaire policy (for player() in games4e).
+
+    Each candidate jump is scored by running greedy_bfs on a
+    PegSolitaire problem from the board after that jump; the jump with the
+    shortest solitaire solution wins, with fewer opponent moves as tie-break.
+
+    Returns (0, move): player() only uses the move at index 1,
+    """
+    
+    return (0, _duotaire_search_pick_move(game, state, greedy_bfs))

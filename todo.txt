@@ -2,7 +2,8 @@
 
 ## To-do 
     -For Duotaire
-        - Get non-random players in duotaire working
+        - Get non-random players in duotaire working -JG check this and they seem to work
+                                                      - JG added A* and gready BFS
         - Minimax player
 
     -For Solitaire

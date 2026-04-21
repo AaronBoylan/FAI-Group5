@@ -70,6 +70,16 @@ GAME_PLAYERS = {
         'name': "MCTS Player",
         'short_name': "mcts",
         'method': player(monte_carlo_tree_search)
+    },
+    4: {
+        'name': "A* Player",
+        'short_name': "astar_duotaire",
+        'method': player(duotaire_astar_search)
+    },
+    5: {
+        'name': "Greedy BFS Player",
+        'short_name': "greedy_bfs_duotaire",
+        'method': player(duotaire_greedy_bfs_search)
     }
 }
 
