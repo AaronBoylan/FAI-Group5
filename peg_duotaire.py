@@ -5,7 +5,7 @@ from peg_board import *
 class PegDuotaire(Game):
     """PegDuotaire, a subclass of Game, represents one player in a Peg Duotaire game."""
     def __init__(self, shape='English'):
-        assert shape == 'English' or shape == 'Triangle'
+        assert shape in ('English', 'Triangle', 'French')
         self.shape = shape
         if shape == 'English':
             # board = EnglishPegBoardDict(to_move='X')

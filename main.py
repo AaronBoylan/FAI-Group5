@@ -31,7 +31,7 @@ def play_peg_solitaire(visualize=True):
 
     return
 
-def play_peg_duotaire():
+def play_peg_duotaire(visualize=True):
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
     shape = int(input(f"Select peg board shape: \n{menu_options}\n"))
 
@@ -41,12 +41,20 @@ def play_peg_duotaire():
     player1 = int(input(f"Select player #1: \n{menu_options}\n"))
     player2 = int(input(f"Select player #2: \n{menu_options}\n"))
 
-    final_board = play_game(peg_duo, dict(X=GAME_PLAYERS[player1]['method'],
-                                          O=GAME_PLAYERS[player2]['method']), verbose=True)
+    path_states = [] if visualize else None
+    final_board = play_game(
+        peg_duo,
+        dict(X=GAME_PLAYERS[player1]['method'], O=GAME_PLAYERS[player2]['method']),
+        verbose=True,
+        state_history=path_states,
+    )
     if peg_duo.utility(final_board, "X") == 1:
         print(f"Player X ({GAME_PLAYERS[player1]['name']}) wins!")
     else:
         print(f"Player O ({GAME_PLAYERS[player2]['name']}) wins!")
+    if visualize:
+        print(f"Visualizing {GAME_PLAYERS[player1]['name']} vs {GAME_PLAYERS[player2]['name']}...")
+        plot_board_states(path_states)
 
 def test_peg_solitaire():
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in TESTING_MENUS.items()])
@@ -104,7 +112,7 @@ def main():
 
         case 2:
             print("Simulating Peg Duotaire...")
-            play_peg_duotaire()
+            play_peg_duotaire(visualize=True)
 
         case 3:
             print("Running Test Bench...")

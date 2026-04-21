@@ -39,14 +39,20 @@ class Game:
         raise NotImplementedError
 
 
-def play_game(game, strategies: dict, verbose=False, user_player=False):
+def play_game(game, strategies: dict, verbose=False, user_player=False, state_history=None):
     """Play a turn-taking game. `strategies` is a {player_name: function} dict,
-    where function(state, game) is used to get the player's move."""
+    where function(state, game) is used to get the player's move.
+    --If `state_history` is a list, append the initial state, then the state after
+    each ply, for replay or visualization."""
     state = game.initial
+    if state_history is not None:
+        state_history.append(state)
     while not game.is_terminal(state):
         player = state.to_move
         move = strategies[player](game, state)
         state = game.result(state, move)
+        if state_history is not None:
+            state_history.append(state)
         if verbose: 
             if user_player:
                 "Player X is the user, while Player 0 is the computer."
@@ -74,17 +80,27 @@ def random_player(game, state): return random.choice(list(game.actions(state)))
 def user_player(game, state):
     "Player with choices determined by user input."
     move = None
-    x = 1
     while move not in game.actions(state):
         print("\nCurrent board:")
         print(state)
-        print()
-        for f, o, t, _ in game.actions(state):
+        actions = list(game.actions(state))
+
+        if not actions:
+            raise ValueError("No legal moves from this state.")
+        for i, (f, o, t, _) in enumerate(actions, start=1):
             action = f.bit_length() - 1, o.bit_length() - 1, t.bit_length() - 1
-            print(f'{x}. Action(from, over, to): {action}')
-            x += 1
-        user_input = input("Your move? ")
-        move = game.actions(state)[int(user_input) - 1]
+            print(f'{i}. Action(from, over, to): {action}')
+        user_input = input("Your move? ").strip()
+        #check if the input is a valid
+        try:
+            choice = int(user_input)
+        except ValueError:
+            print("Invalid input: enter the number of one of the listed moves.")
+            continue
+        if choice < 1 or choice > len(actions):
+            print(f"Invalid choice: enter a number from 1 to {len(actions)}.")
+            continue
+        move = actions[choice - 1]
     return move
 
 def player(search_algorithm):
