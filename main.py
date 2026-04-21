@@ -44,7 +44,7 @@ def play_peg_duotaire(visualize=True):
 
     state_history = [] if visualize else None
     final_board = play_game(peg_duo, dict(X=GAME_PLAYERS[player1]['method'],
-                                          O=GAME_PLAYERS[player2]['method']), verbose=True)
+                                          O=GAME_PLAYERS[player2]['method']), verbose=True, pathState=state_history)
     if peg_duo.utility(final_board, "X") == 1:
         print(f"Player X ({GAME_PLAYERS[player1]['name']}) wins!")
     else:
