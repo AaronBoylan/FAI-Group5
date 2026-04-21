@@ -1,24 +1,23 @@
 # FAI-Group5 To-Do List
 
 ## To-do 
-    -For Duotaire
-        - Get non-random players in duotaire working -JG check this and they seem to work
-                                                      - JG added A* and gready BFS
-        - Minimax player                            -JG implemented minimax from the games4e.py 
-
     -For Solitaire
         - Algorithm comparison
         - Run heuristics individually and compare
 
+## In progress
     - Work on report
     - Work on powerpoint
 
-## In progress
+
 
 ## Completed
     - Duotaire interactive human player
     - MCTS player
-
+    -For Duotaire
+        - Get non-random players in duotaire working -JG check this and they seem to work
+                                                      - JG added A* and gready BFS
+        - Minimax player                            -JG implemented minimax from the games4e.py 
+    - Graphical gameplay for duotaire
 
 ## Stretch goals
-    - Graphical gameplay for duotaire
