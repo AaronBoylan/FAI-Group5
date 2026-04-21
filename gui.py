@@ -8,7 +8,7 @@ import os
 def pygame_init():
     pygame.init()
     os.environ['ApplePersistenceIgnoreState'] = 'YES'
-    screen = pygame.display.set_mode((1200, 550))
+    screen = pygame.display.set_mode((1200, 620))
     pygame.display.set_caption('Peg Game Portal (AI801 Spring 2026, Group #5)')
     pygame.event.clear()
     return screen
@@ -17,6 +17,11 @@ def pygame_init():
 def main_gui():
     screen = pygame_init()
     clock = pygame.time.Clock()
+
+    # `GAME_PLAYERS` already includes `User`; keep a stable order with `User` first.
+    _all_player_short_names = [v['short_name'] for v in GAME_PLAYERS.values()]
+    duo_player_short_names = ['User'] + [n for n in _all_player_short_names if n != 'User']
+    duo_player_cols = 4
 
     # Default Selections
     states = {
@@ -60,17 +65,23 @@ def main_gui():
 
         draw_text(screen, 'Player 1:', (80, 370))
         p1_rects = {}
-        for i, p_name in enumerate([v['short_name'] for v in GAME_PLAYERS.values()]):
+        for i, p_name in enumerate(duo_player_short_names):
             color = (50, 50, 120) if states['duo_p1'] == p_name else (60, 60, 60)
-            p1_rects[p_name] = draw_button(screen, p_name, (200 + (i * 140), 365), width=130, color=color)
+            col, row = i % duo_player_cols, i // duo_player_cols
+            p1_rects[p_name] = draw_button(
+                screen, p_name, (200 + (col * 140), 365 + (row * 45)), width=130, color=color
+            )
 
-        draw_text(screen, 'Player 2:', (80, 420))
+        draw_text(screen, 'Player 2:', (80, 470))
         p2_rects = {}
-        for i, p_name in enumerate([v['short_name'] for v in GAME_PLAYERS.values()]):
+        for i, p_name in enumerate(duo_player_short_names):
             color = (50, 50, 120) if states['duo_p2'] == p_name else (60, 60, 60)
-            p2_rects[p_name] = draw_button(screen, p_name, (200 + (i * 140), 415), width=130, color=color)
+            col, row = i % duo_player_cols, i // duo_player_cols
+            p2_rects[p_name] = draw_button(
+                screen, p_name, (200 + (col * 140), 465 + (row * 45)), width=130, color=color
+            )
 
-        launch_duo = draw_button(screen, 'LAUNCH DUOTAIRE', (200, 465), width=250, color=(150, 50, 50))
+        launch_duo = draw_button(screen, 'LAUNCH DUOTAIRE', (200, 575), width=250, color=(150, 50, 50))
 
         # pygame.draw.line(screen, (80, 80, 80), (50, 550), (1050, 550), 1)
 
@@ -263,7 +274,7 @@ PEG_RADIUS = 14
 HOLE_RADIUS = 16
 
 
-def draw_board(screen, state, selected_idx=None):
+def draw_board(screen, state, selected_idx=None, flip_display=True):    
     screen.fill((25, 25, 28))
 
     for (r, c), bit_idx in EnglishPegBoardInt.INDEX_MAP.items():
@@ -284,7 +295,8 @@ def draw_board(screen, state, selected_idx=None):
                 for r_offset in range(2):
                     pygame.gfxdraw.aacircle(screen, x, y, HOLE_RADIUS + r_offset, (0, 255, 200))
 
-    pygame.display.flip()
+    if flip_display:
+        pygame.display.flip()
 
 
 def get_bit_index_from_mouse(pos):

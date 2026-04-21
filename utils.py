@@ -68,7 +68,7 @@ GAME_PLAYERS = {
     },
     3: {
         'name': "MCTS Player",
-        'short_name': "mcts",
+        'short_name': "MCTS",
         'method': player(monte_carlo_tree_search)
     },
     4: {
@@ -80,12 +80,16 @@ GAME_PLAYERS = {
         'name': "Greedy BFS Player",
         'short_name': "greedy_bfs_duotaire",
         'method': player(duotaire_greedy_bfs_search)
-    }
-    ,
+    },
     6: {
         'name': "Minimax Player (Full Depth) (***Warning very slow on English and French boards***)",
         'short_name': "minimax_decision",
         'method': player(duotaire_minimax_search)
+    },
+    7: {
+        'name': "User Player",
+        'short_name': "User",
+        'method': user_player
     }
 }
 

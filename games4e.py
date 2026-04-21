@@ -65,9 +65,16 @@ def play_game(
         if state_history is not None:
             state_history.append(state)
 
-            # GUI UPDATE
+        # GUI UPDATE (independent of whether a replay list is being recorded)
         if screen and draw_board:
-            draw_board(screen, state.state)
+            # Avoid double-flipping if `draw_board` already calls pygame.display.flip().
+            try:
+                draw_board(screen, state.state, flip_display=False)
+            except TypeError:
+                draw_board(screen, state.state)
+
+            import pygame
+            pygame.display.flip()
 
         if verbose: 
             if user_player:
