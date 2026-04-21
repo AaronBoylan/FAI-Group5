@@ -68,7 +68,7 @@ def test_peg_solitaire():
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
-            print('test duotaire TBD')
+            test_duotaire(('Random', 'AlphaBeta', 'MCTS'), ('Triangle', 'English', 'French'), 100, verbose=True)
 
         case 3:
             test_data_structures()
