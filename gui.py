@@ -119,6 +119,10 @@ def main_gui():
                     # print(f'Launch Solitaire: {states["sol_board"]} / {states["sol_alg"]}')
                     peg_sol = PegSolitaire(shape=states['sol_board'])
                     search_method = next((v['method'] for v in SEARCH_ALGORITHMS.values() if v['short_name'] == states["sol_alg"]), None)
+
+                    if states['sol_board'] == 'French' and search_method == depth_first_bfs:
+                        draw_warning_overlay(screen, "Running DFS on the French board may take a significant amount of time. Click OK to proceed")
+
                     if search_method:
                         pathStates = path_states(search_method(peg_sol))
                         plot_board_states(pathStates)
@@ -145,13 +149,12 @@ def main_gui():
 
                     if has_user_player:
                         final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, screen=screen, draw_board=draw_board)
+                        winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
+                        draw_warning_overlay(screen, f"Winner: {winner}")
                     else:
                         pathStates = []
                         final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, pathState=pathStates)
                         plot_board_states(pathStates, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
-
-                    winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
-                    draw_warning_overlay(screen, f"Winner: {winner}")
 
                 # if launch_test.collidepoint(event.pos):
                 #
@@ -252,7 +255,7 @@ PEG_RADIUS = 14
 HOLE_RADIUS = 16
 
 
-def draw_board(screen, state, selected_idx=None):
+def draw_board(screen, state, selected_idx=None, flip_display=True):    
     screen.fill((25, 25, 28))
 
     for (r, c), bit_idx in EnglishPegBoardInt.INDEX_MAP.items():
@@ -273,7 +276,8 @@ def draw_board(screen, state, selected_idx=None):
                 for r_offset in range(2):
                     pygame.gfxdraw.aacircle(screen, x, y, HOLE_RADIUS + r_offset, (0, 255, 200))
 
-    pygame.display.flip()
+    if flip_display:
+        pygame.display.flip()
 
 
 def get_bit_index_from_mouse(pos):
@@ -414,3 +418,11 @@ def draw_warning_overlay(screen, message):
 #                     running = False
 #
 #         pygame.display.flip()
+
+
+def main():
+    main_gui()
+
+
+if __name__ == "__main__":
+    main()

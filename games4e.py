@@ -41,7 +41,9 @@ class Game:
 
 def play_game(game, strategies: dict, verbose=False, user_player=False, screen=None, draw_board=None, pathState=None):
     """Play a turn-taking game. `strategies` is a {player_name: function} dict,
-    where function(state, game) is used to get the player's move."""
+    where function(state, game) is used to get the player's move.
+    --If `pathState` is a list, append the initial state, then the state after
+    each ply, for replay or visualization."""
     state = game.initial
 
     if pathState is not None:
@@ -55,12 +57,16 @@ def play_game(game, strategies: dict, verbose=False, user_player=False, screen=N
         if pathState is not None:
             pathState.append(state)
 
-            # GUI UPDATE
+        # GUI UPDATE (independent of whether a replay list is being recorded)
         if screen and draw_board:
-            draw_board(screen, state.state)
+            # Avoid double-flipping if `draw_board` already calls pygame.display.flip().
+            try:
+                draw_board(screen, state.state, flip_display=False)
+            except TypeError:
+                draw_board(screen, state.state)
 
             import pygame
-            pygame.time.wait(1000)
+            pygame.display.flip()
 
         if verbose: 
             if user_player:
@@ -89,17 +95,27 @@ def random_player(game, state): return random.choice(list(game.actions(state)))
 def user_player(game, state):
     "Player with choices determined by user input."
     move = None
-    x = 1
     while move not in game.actions(state):
         print("\nCurrent board:")
         print(state)
-        print()
-        for f, o, t, _ in game.actions(state):
+        actions = list(game.actions(state))
+
+        if not actions:
+            raise ValueError("No legal moves from this state.")
+        for i, (f, o, t, _) in enumerate(actions, start=1):
             action = f.bit_length() - 1, o.bit_length() - 1, t.bit_length() - 1
-            print(f'{x}. Action(from, over, to): {action}')
-            x += 1
-        user_input = input("Your move? ")
-        move = game.actions(state)[int(user_input) - 1]
+            print(f'{i}. Action(from, over, to): {action}')
+        user_input = input("Your move? ").strip()
+        #check if the input is a valid
+        try:
+            choice = int(user_input)
+        except ValueError:
+            print("Invalid input: enter the number of one of the listed moves.")
+            continue
+        if choice < 1 or choice > len(actions):
+            print(f"Invalid choice: enter a number from 1 to {len(actions)}.")
+            continue
+        move = actions[choice - 1]
     return move
 
 def player(search_algorithm):
@@ -245,3 +261,30 @@ def monte_carlo_tree_search(game, state, N=1000):
 
     # return root.children.get(max_state)
     return (0, root.children.get(max_state))
+
+
+
+def minmax_decision(state, game):  #from games4e.py 
+    """Given a state in a game, calculate the best move by searching
+    forward all the way to the terminal states. [Figure 5.3]"""
+
+    player = game.to_move(state)
+
+    def max_value(state):
+        if game.terminal_test(state):
+            return game.utility(state, player)
+        v = -np.inf
+        for a in game.actions(state):
+            v = max(v, min_value(game.result(state, a)))
+        return v
+
+    def min_value(state):
+        if game.terminal_test(state):
+            return game.utility(state, player)
+        v = np.inf
+        for a in game.actions(state):
+            v = min(v, max_value(game.result(state, a)))
+        return v
+
+    # Body of minmax_decision:
+    return max(game.actions(state), key=lambda a: min_value(game.result(state, a)))

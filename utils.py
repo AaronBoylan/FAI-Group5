@@ -47,12 +47,11 @@ SEARCH_ALGORITHMS = {
         'short_name': "Bidirectional A*",
         'method': peg_bidirectional_astar_search
     },
-    5: {
-        'name': "MCTS Monte Carlo Tree Search",
-        'short_name': "MCTS",
-        'method': mcts_search
-    }
-    
+    # 5: {
+    #     'name': "MCTS Monte Carlo Tree Search",
+    #     'short_name': "MCTS",
+    #     'method': mcts_search
+    # }
 }
 
 GAME_PLAYERS = {

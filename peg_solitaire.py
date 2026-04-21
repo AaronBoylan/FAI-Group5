@@ -256,7 +256,6 @@ def test_data_structures():
         TrackingPriorityQueue.reset_tracker()
 
         peg_sol_dict = PegSolitaireDict(shape='English')
-        print('Initial State:\n', peg_sol_dict.initial)
         time_ms, counts = run_search(astar_search, peg_sol_dict)
 
         size = asizeof.asizeof(peg_sol_dict.initial.pegs)
@@ -275,7 +274,6 @@ def test_data_structures():
         TrackingPriorityQueue.reset_tracker()
 
         peg_sol = PegSolitaire(shape='English')
-        print('Initial State:', bin(peg_sol.initial.state))
         time_ms, counts = run_search(astar_search, peg_sol)
 
         size = asizeof.asizeof(peg_sol.initial.state)

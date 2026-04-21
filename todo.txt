@@ -3,18 +3,21 @@
 ## To-do 
     -For Solitaire
         - Algorithm comparison
-        - Run heuristics individually and compare    
+        - Run heuristics individually and compare
 
 ## In progress
     - Work on report
     - Work on powerpoint
 
+
+
 ## Completed
-    - Get non-random players in duotaire working
     - Duotaire interactive human player
     - MCTS player
+    -For Duotaire
+        - Get non-random players in duotaire working -JG check this and they seem to work
+                                                      - JG added A* and gready BFS
+        - Minimax player                            -JG implemented minimax from the games4e.py 
     - Graphical gameplay for duotaire
 
-
 ## Stretch goals
-    - Minimax player
