@@ -8,7 +8,7 @@ import os
 def pygame_init():
     pygame.init()
     os.environ['ApplePersistenceIgnoreState'] = 'YES'
-    screen = pygame.display.set_mode((1200, 620))
+    screen = pygame.display.set_mode((1000, 550))
     pygame.display.set_caption('Peg Game Portal (AI801 Spring 2026, Group #5)')
     pygame.event.clear()
     return screen
@@ -17,11 +17,6 @@ def pygame_init():
 def main_gui():
     screen = pygame_init()
     clock = pygame.time.Clock()
-
-    # `GAME_PLAYERS` already includes `User`; keep a stable order with `User` first.
-    _all_player_short_names = [v['short_name'] for v in GAME_PLAYERS.values()]
-    duo_player_short_names = ['User'] + [n for n in _all_player_short_names if n != 'User']
-    duo_player_cols = 4
 
     # Default Selections
     states = {
@@ -65,23 +60,17 @@ def main_gui():
 
         draw_text(screen, 'Player 1:', (80, 370))
         p1_rects = {}
-        for i, p_name in enumerate(duo_player_short_names):
+        for i, p_name in enumerate([v['short_name'] for v in GAME_PLAYERS.values()]):
             color = (50, 50, 120) if states['duo_p1'] == p_name else (60, 60, 60)
-            col, row = i % duo_player_cols, i // duo_player_cols
-            p1_rects[p_name] = draw_button(
-                screen, p_name, (200 + (col * 140), 365 + (row * 45)), width=130, color=color
-            )
+            p1_rects[p_name] = draw_button(screen, p_name, (200 + (i * 140), 365), width=130, color=color)
 
-        draw_text(screen, 'Player 2:', (80, 470))
+        draw_text(screen, 'Player 2:', (80, 420))
         p2_rects = {}
-        for i, p_name in enumerate(duo_player_short_names):
+        for i, p_name in enumerate([v['short_name'] for v in GAME_PLAYERS.values()]):
             color = (50, 50, 120) if states['duo_p2'] == p_name else (60, 60, 60)
-            col, row = i % duo_player_cols, i // duo_player_cols
-            p2_rects[p_name] = draw_button(
-                screen, p_name, (200 + (col * 140), 465 + (row * 45)), width=130, color=color
-            )
+            p2_rects[p_name] = draw_button(screen, p_name, (200 + (i * 140), 415), width=130, color=color)
 
-        launch_duo = draw_button(screen, 'LAUNCH DUOTAIRE', (200, 575), width=250, color=(150, 50, 50))
+        launch_duo = draw_button(screen, 'LAUNCH DUOTAIRE', (200, 465), width=250, color=(150, 50, 50))
 
         # pygame.draw.line(screen, (80, 80, 80), (50, 550), (1050, 550), 1)
 
@@ -130,9 +119,13 @@ def main_gui():
                     # print(f'Launch Solitaire: {states["sol_board"]} / {states["sol_alg"]}')
                     peg_sol = PegSolitaire(shape=states['sol_board'])
                     search_method = next((v['method'] for v in SEARCH_ALGORITHMS.values() if v['short_name'] == states["sol_alg"]), None)
+
+                    if states['sol_board'] == 'French' and search_method == depth_first_bfs:
+                        draw_warning_overlay(screen, "Running DFS on the French board may take a significant amount of time. Click OK to proceed")
+
                     if search_method:
-                        state_history = path_states(search_method(peg_sol))
-                        plot_board_states(state_history)
+                        pathStates = path_states(search_method(peg_sol))
+                        plot_board_states(pathStates)
 
                 if launch_duo.collidepoint(event.pos):
                     # print(f'Launch Duotaire: {states["duo_board"]} / {states["duo_p1"]} / {states["duo_p2"]}')
@@ -155,25 +148,13 @@ def main_gui():
                         continue
 
                     if has_user_player:
-                        final_board = play_game(
-                            peg_duo,
-                            {'X': p1, 'O': p2},
-                            verbose=False,
-                            screen=screen,
-                            draw_board=draw_board,
-                        )
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, screen=screen, draw_board=draw_board)
+                        winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
+                        draw_warning_overlay(screen, f"Winner: {winner}")
                     else:
-                        state_history = []
-                        final_board = play_game(
-                            peg_duo,
-                            {'X': p1, 'O': p2},
-                            verbose=False,
-                            state_history=state_history,
-                        )
-                        plot_board_states(state_history, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
-
-                    winner = states['duo_p1'] if peg_duo.utility(final_board, 'X') == 1 else states['duo_p2']
-                    draw_warning_overlay(screen, f"Winner: {winner}")
+                        pathStates = []
+                        final_board = play_game(peg_duo, {'X': p1, 'O': p2}, verbose=False, pathState=pathStates)
+                        plot_board_states(pathStates, duo=True, player1=states['duo_p1'], player2=states['duo_p2'])
 
                 # if launch_test.collidepoint(event.pos):
                 #

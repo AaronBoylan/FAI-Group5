@@ -14,12 +14,10 @@ class PegSolitaire(Problem):
         assert shape in ('English', 'French', 'Triangle')
         self.shape = shape
         if shape == 'English':
-            # board = EnglishPegBoardDict()
             board = EnglishPegBoardInt()
         elif shape == 'French':
             board = FrenchPegBoardInt()
         elif shape == 'Triangle':
-            # board = TrianglePegBoardDict()
             board = TrianglePegBoardInt()
 
         self.initial = board
@@ -202,7 +200,9 @@ def test_performance(searchers, shapes, verbose=False):
     """Show summary statistics for each searcher (and on each problem unless verbose is false)."""
     results = {}
     for searcher in searchers:
-        name = searcher.__name__
+        # name = searcher.__name__
+        from utils import SEARCH_ALGORITHMS
+        name = [v['short_name'] for k, v in SEARCH_ALGORITHMS.items() if v['method'] == searcher][0]
         results[name] = {}
         print(f'\n{name}:')
 
@@ -294,8 +294,6 @@ from itertools import permutations
 
 def test_directions(searcher, shape):
     print(f'\n{searcher.__name__} on {shape} board')
-
-
 
     if shape == 'English' or shape == 'French':
         DIR = {'North': (-1, 0), 'South': (1, 0), 'East': (0, 1), 'West': (0, -1)}

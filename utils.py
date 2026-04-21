@@ -33,37 +33,36 @@ SEARCH_ALGORITHMS = {
         'method': depth_first_bfs
     },
     2: {
-        'name': "A* Search",
-        'short_name': "A* Search",
-        'method': astar_search
-    },
-    3: {
         'name': "Greedy Best-First Search",
         'short_name': "Greedy BFS",
         'method': greedy_bfs
     },
+    3: {
+        'name': "A* Search",
+        'short_name': "A*",
+        'method': astar_search
+    },
     4: {
         'name': "Bidirectional A* Search",
-        'short_name': "Bidirectional A* Search",
+        'short_name': "Bidirectional A*",
         'method': peg_bidirectional_astar_search
     },
-    5: {
-        'name': "MCTS Monte Carlo Tree Search",
-        'short_name': "MCTS Search",
-        'method': mcts_search
-    }
-    
+    # 5: {
+    #     'name': "MCTS Monte Carlo Tree Search",
+    #     'short_name': "MCTS",
+    #     'method': mcts_search
+    # }
 }
 
 GAME_PLAYERS = {
     1: {
         'name': "Random Player",
-        'short_name': "random_player",
+        'short_name': "Random",
         'method': random_player
     },
     2: {
         'name': "AlphaBeta Player",
-        'short_name': "h_alphabeta_search",
+        'short_name': "AlphaBeta",
         'method': player(h_alphabeta_search)
     },
     3: {
@@ -72,21 +71,6 @@ GAME_PLAYERS = {
         'method': player(monte_carlo_tree_search)
     },
     4: {
-        'name': "A* Player",
-        'short_name': "astar_duotaire",
-        'method': player(duotaire_astar_search)
-    },
-    5: {
-        'name': "Greedy BFS Player",
-        'short_name': "greedy_bfs_duotaire",
-        'method': player(duotaire_greedy_bfs_search)
-    },
-    6: {
-        'name': "Minimax Player (Full Depth) (***Warning very slow on English and French boards***)",
-        'short_name': "minimax_decision",
-        'method': player(duotaire_minimax_search)
-    },
-    7: {
         'name': "User Player",
         'short_name': "User",
         'method': user_player
@@ -100,17 +84,22 @@ search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
 TESTING_MENUS = {
     1: {
         'name': "Compare Performance of Search Algorithms",
-        'short_name': "test_performance",
+        'short_name': "Peg Solitaire Search Performance",
         'method': test_performance
     },
     2: {
-        'name': "Compare Performance of Dict and Bitmask Data Structures",
-        'short_name': "test_data_structures",
-        'method': test_data_structures
+        'name': "Compare Performance of Game Algorithms",
+        'short_name': "Peg Duotaire Game Performance",
+        'method': test_performance
     },
     3: {
+        'name': "Compare Performance of Dict and Bitmask Data Structures",
+        'short_name': "Peg Board Bitwise Performance",
+        'method': test_data_structures
+    },
+    4: {
         'name': "Compare Performance of Different Direction Orders",
-        'short_name': "test_directions",
+        'short_name': "DFS Search Direction Comparison",
         'method': test_directions
     }
 }

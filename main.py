@@ -22,13 +22,13 @@ def play_peg_solitaire(visualize=True):
     startTime = time.time_ns()
 
     #search_methods.get(searchType) is a function, so we need to call it with the arguments
-    state_history = path_states(search_methods.get(searchType)(peg_sol))
+    pathStates = path_states(search_methods.get(searchType)(peg_sol))
         
     timeTaken = (time.time_ns() - startTime) / 1_000_000
 
     if visualize:
-        plot_board_states(state_history)
-        # visualize_search_matlab(searchType, timeTaken, state_history)
+        plot_board_states(pathStates)
+        # visualize_search_matlab(searchType, timeTaken, pathStates)
 
     return
 
@@ -43,12 +43,8 @@ def play_peg_duotaire(visualize=True):
     player2 = int(input(f"Select player #2: \n{menu_options}\n"))
 
     state_history = [] if visualize else None
-    final_board = play_game(
-        peg_duo,
-        dict(X=GAME_PLAYERS[player1]['method'], O=GAME_PLAYERS[player2]['method']),
-        verbose=True,
-        state_history=state_history,
-    )
+    final_board = play_game(peg_duo, dict(X=GAME_PLAYERS[player1]['method'],
+                                          O=GAME_PLAYERS[player2]['method']), verbose=True)
     if peg_duo.utility(final_board, "X") == 1:
         print(f"Player X ({GAME_PLAYERS[player1]['name']}) wins!")
     else:
@@ -72,13 +68,15 @@ def test_peg_solitaire():
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
-            test_data_structures()
+            print('test duotaire TBD')
 
         case 3:
-            test_directions(depth_first_bfs, 'English')
+            test_data_structures()
 
         case 4:
-            compare_search_algorithms()
+            test_directions(depth_first_bfs, 'Triangle')
+            test_directions(depth_first_bfs, 'English')
+            test_directions(depth_first_bfs, 'French')
 
 def user_plays():
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
