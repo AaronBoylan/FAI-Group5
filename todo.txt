@@ -12,8 +12,6 @@
     - Work on report
     - Work on powerpoint
 
-
-
 ## Completed
     - Duotaire interactive human player
     - MCTS player
@@ -22,6 +20,6 @@
                                                       - JG added A* and gready BFS
         - Minimax player                            -JG implemented minimax from the games4e.py 
     - Graphical gameplay for duotaire
-    -Cleanup of imports
+    -Cleanup of imports                             -JG completed.  removed circular imports
 
 ## Stretch goals

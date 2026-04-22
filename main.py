@@ -3,7 +3,7 @@ import time
 from utils import PEG_BOARDS, SEARCH_ALGORITHMS, GAME_PLAYERS,TESTING_MENUS
 from peg_solitaire import PegSolitaire, peg_bidirectional_astar_search
 from peg_duotaire import PegDuotaire, test_duotaire
-from visualize_search import plot_board_states
+from visualize_search import plot_board_states, plot_duotaire_results
 from search4e import path_states, depth_first_bfs, greedy_bfs, astar_search, mcts_search
 from games4e import play_game, user_player
 from gui import main_gui
@@ -80,8 +80,8 @@ def test_peg_solitaire():
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
-            test_duotaire(('Random', 'AlphaBeta', 'MCTS'), ('Triangle', 'English', 'French'), 2, verbose=True)
-
+            results = test_duotaire(('Random', 'AlphaBeta', 'MCTS'), ('Triangle', 'English', 'French'), 100, verbose=True)
+            plot_duotaire_results(results)
         case 3:
             results = test_data_structures()
 
