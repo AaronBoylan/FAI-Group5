@@ -2,7 +2,7 @@
 import copy
 import math
 
-from games4e import Game, minmax_decision
+from games4e import Game, minmax_decision, play_game
 from peg_board import *
 from peg_solitaire import PegSolitaire
 from search4e import astar_search, failure, greedy_bfs
@@ -122,3 +122,36 @@ def duotaire_minimax_search(game, state):
     Returns (0, move): player() only uses the move at index 1.
     """
     return (0, minmax_decision(state, game))
+
+
+def test_duotaire(searchers, shapes, times, verbose=False):
+    import itertools
+
+    results = {}
+
+    for shape in shapes:
+        for p1_name, p2_name in itertools.combinations(searchers, 2):
+            from utils import GAME_PLAYERS
+            p1 = [v['method'] for k, v in GAME_PLAYERS.items() if v['short_name'] == p1_name][0]
+            p2 = [v['method'] for k, v in GAME_PLAYERS.items() if v['short_name'] == p2_name][0]
+
+            print(f'Running Peg Duotaire match {times} times on {shape} board: {p1_name} v.s. {p2_name}')
+            results[(shape, p1_name, p2_name)] = [0, 0]
+
+            peg_duo = PegDuotaire(shape=shape)
+
+            for _ in range(int(times/2)):
+                final_board = play_game(peg_duo, dict(X=p1, O=p2), verbose=False)
+                idx = 0 if peg_duo.utility(final_board, 'X') == 1 else 1
+                results[(shape, p1_name, p2_name)][idx] += 1
+
+                final_board = play_game(peg_duo, dict(X=p2, O=p1), verbose=False)
+                idx = 0 if peg_duo.utility(final_board, 'O') == 1 else 1
+                results[(shape, p1_name, p2_name)][idx] += 1
+
+            print('Result:', results[(shape, p1_name, p2_name)])
+
+    print(results)
+    # if verbose:
+
+    return results

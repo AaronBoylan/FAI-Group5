@@ -44,7 +44,7 @@ def play_peg_duotaire(visualize=True):
 
     state_history = [] if visualize else None
     final_board = play_game(peg_duo, dict(X=GAME_PLAYERS[player1]['method'],
-                                          O=GAME_PLAYERS[player2]['method']), verbose=True)
+                                          O=GAME_PLAYERS[player2]['method']), verbose=True, pathState=state_history)
     if peg_duo.utility(final_board, "X") == 1:
         print(f"Player X ({GAME_PLAYERS[player1]['name']}) wins!")
     else:
@@ -68,7 +68,7 @@ def test_peg_solitaire():
             #     ('Triangle', 'English', 'French'), verbose=True)
 
         case 2:
-            print('test duotaire TBD')
+            test_duotaire(('Random', 'AlphaBeta', 'MCTS'), ('Triangle', 'English', 'French'), 100, verbose=True)
 
         case 3:
             test_data_structures()
