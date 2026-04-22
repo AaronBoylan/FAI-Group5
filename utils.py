@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-from peg_solitaire import *
-from peg_duotaire import *
-from peg_board import *
-# from visualize_search import *
-from search4e import *
-from games4e import *
+from peg_solitaire import peg_bidirectional_astar_search, test_performance, test_data_structures, test_directions
+from games4e import random_player, h_alphabeta_search, monte_carlo_tree_search, user_player, player
+from search4e import depth_first_bfs, greedy_bfs, astar_search, mcts_search
+
 
 PEG_BOARDS = {
     1: {
@@ -47,12 +45,14 @@ SEARCH_ALGORITHMS = {
         'short_name': "Bidirectional A*",
         'method': peg_bidirectional_astar_search
     },
-    # 5: {
-    #     'name': "MCTS Monte Carlo Tree Search",
-    #     'short_name': "MCTS",
-    #     'method': mcts_search
-    # }
+    5: {
+         'name': "MCTS Monte Carlo Tree Search",
+         'short_name': "MCTS",
+         'method': mcts_search
+     }
 }
+
+
 
 GAME_PLAYERS = {
     1: {
@@ -77,9 +77,8 @@ GAME_PLAYERS = {
     }
 }
 
-# Backward compatibility - maintain existing dictionaries
-search_methods = {k: v['method'] for k, v in SEARCH_ALGORITHMS.items()}
-search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
+
+
 
 TESTING_MENUS = {
     1: {

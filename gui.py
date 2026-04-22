@@ -1,13 +1,32 @@
-from utils import *
+from utils import PEG_BOARDS, SEARCH_ALGORITHMS, GAME_PLAYERS
 import pygame
 import pygame.gfxdraw
 import sys
 import os
+from visualize_search import plot_board_states
+from peg_solitaire import PegSolitaire
+from peg_duotaire import PegDuotaire
+from search4e import path_states
+from games4e import play_game
+from search4e import depth_first_bfs
+from peg_board import EnglishPegBoardInt
+
 
 
 def pygame_init():
     pygame.init()
     os.environ['ApplePersistenceIgnoreState'] = 'YES'
+
+    # Window/taskbar icon (set before creating the window).
+    icon_path = os.path.join(os.path.dirname(__file__), 'peg_solitaire.png')
+    try:
+        icon = pygame.image.load(icon_path)
+        pygame.display.set_icon(icon)
+    except pygame.error as e:
+        print(f"INFO: Could not load icon from {icon_path}")
+        print(f"Error: {e}")
+        pass
+
     screen = pygame.display.set_mode((1000, 550))
     pygame.display.set_caption('Peg Game Portal (AI801 Spring 2026, Group #5)')
     pygame.event.clear()
@@ -17,6 +36,7 @@ def pygame_init():
 def main_gui():
     screen = pygame_init()
     clock = pygame.time.Clock()
+
 
     # Default Selections
     states = {

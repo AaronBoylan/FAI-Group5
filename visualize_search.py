@@ -2,11 +2,6 @@
 
 import math
 import matplotlib.pyplot as plt
-# import numpy as np
-# from main import play_peg_solitaire
-# from peg_solitaire import PegSolitaire
-# from search4e import path_states
-# from utils import SEARCH_ALGORITHMS, search_methods, search_names
 
 # def visualize_search_matlab(searchType: int):
 def visualize_search_matlab(searchType, timeTaken, pathStates):
@@ -14,6 +9,9 @@ def visualize_search_matlab(searchType, timeTaken, pathStates):
     """ Visualize the peg solitaire search results using MATLAB-style plots.
     Returns time taken, path states, and solution for further analysis.
     """
+    # Function-local import avoids circular imports at module load:
+    from utils import SEARCH_ALGORITHMS
+    search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
     # timeTaken, pathStates, solution = play_peg_solitaire(searchType, test=True, visualize=True)
 
     if not pathStates:
@@ -144,7 +142,10 @@ def plot_board_states(pathStates, max_states=2, duo=False, player1=None, player2
             if not duo:
                 axes[i].set_title(f'Step {idx}')
             else:
-                player_name = 'Player ' + (player1 if idx % 2 == 1 else player2)
+                if idx % 2 == 1:
+                    player_name = 'Player 1:' + player1
+                else:
+                    player_name = 'Player 2:' + player2
                 axes[i].set_title(player_name)
 
         # Display the board as text
@@ -159,7 +160,24 @@ def plot_board_states(pathStates, max_states=2, duo=False, player1=None, player2
     for extra_indices in range(len(indices), len(axes)):
             axes[extra_indices].axis('off')
 
-    plt.tight_layout()
+    #Detect if game is over and display winner
+    if duo and player1 and player2 and hasattr(pathStates[-1], "to_move"):
+        loser = pathStates[-1].to_move
+        winner = "O" if loser == "X" else "X"
+        winner_name = f'Player 1:{player1}' if winner == "X" else f'Player 2:{player2}'
+        
+        fig.text(
+            0.5,
+            0.02,
+            f"Winner: ({winner_name})",
+            ha="center",
+            va="bottom",
+            fontsize=14,
+            fontweight="bold",
+        )
+        plt.tight_layout(rect=[0, 0.05, 1, 1])
+    else: #playing a solitaire game
+        plt.tight_layout() #just display the results
     plt.show()
 
 def compare_search_algorithms(results):
@@ -226,6 +244,75 @@ def compare_search_algorithms(results):
     plt.show()
 
     return results
+
+
+def plot_duotaire_results(results, title="Peg Duotaire results"):
+    """Plot duotaire win counts.
+    `results` format: {(shape, p1_name, p2_name): [p1_wins, p2_wins], ...}
+    """
+    if not results:
+        print("No results to plot.")
+        return
+
+    # Group by board shape
+    shapes = sorted({k[0] for k in results.keys()})
+    fig, axes = plt.subplots(len(shapes), 1, figsize=(12, 4 * len(shapes)), sharex=False)
+    if len(shapes) == 1:
+        axes = [axes]
+
+    # If trials are consistent, show once as a footer note.
+    any_wins = next(iter(results.values()))
+    total_trials = any_wins[0] + any_wins[1] if isinstance(any_wins, (list, tuple)) and len(any_wins) == 2 else None
+
+    for ax, shape in zip(axes, shapes):
+        matchups = [(p1, p2, wins) for (s, p1, p2), wins in results.items() if s == shape]
+        matchups.sort(key=lambda x: (x[0], x[1]))
+
+        p1_wins = [wins[0] for (_, _, wins) in matchups]
+        p2_wins = [wins[1] for (_, _, wins) in matchups]
+
+        x = list(range(len(matchups)))
+        width = 0.38
+        p1_bars = ax.bar([i - width / 2 for i in x], p1_wins, width=width, label="P1 wins")
+        p2_bars = ax.bar([i + width / 2 for i in x], p2_wins, width=width, label="P2 wins")
+
+        ax.set_title(shape)
+        ax.set_xticks(x)
+        ax.set_ylabel("Win count")
+        ax.grid(axis="y", alpha=0.25)
+        ax.legend()
+
+        # per-bar algorithm labels below x-axis (and optional per-match totals)
+        for i, (w1, w2) in enumerate(zip(p1_wins, p2_wins)):
+            p1, p2, _ = matchups[i]
+            ax.text(
+                i - width / 2,
+                -0.06,
+                p1,
+                transform=ax.get_xaxis_transform(),
+                ha="center",
+                va="top",
+                fontsize=8,
+                clip_on=False,
+            )
+            ax.text(
+                i + width / 2,
+                -0.06,
+                p2,
+                transform=ax.get_xaxis_transform(),
+                ha="center",
+                va="top",
+                fontsize=8,
+                clip_on=False,
+            )
+
+    fig.suptitle(title, fontweight="bold")
+    if total_trials is not None:
+        fig.text(0.5, 0.01, f"Trials per matchup: n={total_trials}", ha="center", va="bottom", fontsize=10)
+        plt.tight_layout(rect=[0, 0.08, 1, 0.96])
+    else:
+        plt.tight_layout(rect=[0, 0.08, 1, 0.96])
+    plt.show()
 
 def plot_one_board(shape, results, ax1, ax2):
     algs = list(results.keys())

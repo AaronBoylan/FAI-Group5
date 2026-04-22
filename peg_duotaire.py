@@ -4,8 +4,8 @@ import math
 
 from games4e import Game, minmax_decision, play_game
 from peg_board import *
-from peg_solitaire import PegSolitaire
 from search4e import astar_search, failure, greedy_bfs
+from peg_solitaire import PegSolitaire
 
 class PegDuotaire(Game):
     """PegDuotaire, a subclass of Game, represents one player in a Peg Duotaire game."""
