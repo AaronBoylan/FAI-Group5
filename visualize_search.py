@@ -2,11 +2,6 @@
 
 import math
 import matplotlib.pyplot as plt
-# import numpy as np
-# from main import play_peg_solitaire
-# from peg_solitaire import PegSolitaire
-# from search4e import path_states
-# from utils import SEARCH_ALGORITHMS, search_methods, search_names
 
 # def visualize_search_matlab(searchType: int):
 def visualize_search_matlab(searchType, timeTaken, pathStates):
@@ -14,6 +9,9 @@ def visualize_search_matlab(searchType, timeTaken, pathStates):
     """ Visualize the peg solitaire search results using MATLAB-style plots.
     Returns time taken, path states, and solution for further analysis.
     """
+    # Function-local import avoids circular imports at module load:
+    from utils import SEARCH_ALGORITHMS
+    search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
     # timeTaken, pathStates, solution = play_peg_solitaire(searchType, test=True, visualize=True)
 
     if not pathStates:
@@ -144,7 +142,10 @@ def plot_board_states(pathStates, max_states=2, duo=False, player1=None, player2
             if not duo:
                 axes[i].set_title(f'Step {idx}')
             else:
-                player_name = 'Player ' + (player1 if idx % 2 == 1 else player2)
+                if idx % 2 == 1:
+                    player_name = 'Player 1:' + player1
+                else:
+                    player_name = 'Player 2:' + player2
                 axes[i].set_title(player_name)
 
         # Display the board as text
@@ -159,7 +160,24 @@ def plot_board_states(pathStates, max_states=2, duo=False, player1=None, player2
     for extra_indices in range(len(indices), len(axes)):
             axes[extra_indices].axis('off')
 
-    plt.tight_layout()
+    #Detect if game is over and display winner
+    if duo and player1 and player2 and hasattr(pathStates[-1], "to_move"):
+        loser = pathStates[-1].to_move
+        winner = "O" if loser == "X" else "X"
+        winner_name = f'Player 1:{player1}' if winner == "X" else f'Player 2:{player2}'
+        
+        fig.text(
+            0.5,
+            0.02,
+            f"Winner: ({winner_name})",
+            ha="center",
+            va="bottom",
+            fontsize=14,
+            fontweight="bold",
+        )
+        plt.tight_layout(rect=[0, 0.05, 1, 1])
+    else: #playing a solitaire game
+        plt.tight_layout() #just display the results
     plt.show()
 
 def compare_search_algorithms(results):

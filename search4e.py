@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Search for AIMA 4th edition
 # 
 # Implementation of search algorithms and search problems for AIMA.

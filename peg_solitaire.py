@@ -4,7 +4,7 @@ import time
 import search4e
 from peg_board import *
 from search4e import *
-from visualize_search import *
+from visualize_search import compare_search_algorithms
 
 class PegSolitaire(Problem):
     """PegSolitaire, a subclass of Problem, is used to find a solution to a Peg Solitaire puzzle.

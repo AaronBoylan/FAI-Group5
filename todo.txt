@@ -5,6 +5,9 @@
         - Algorithm comparison
         - Run heuristics individually and compare
 
+    -Cleanup Remove Commented code
+    -Remove .iopynb files.  Do we need these?
+
 ## In progress
     - Work on report
     - Work on powerpoint
@@ -19,5 +22,6 @@
                                                       - JG added A* and gready BFS
         - Minimax player                            -JG implemented minimax from the games4e.py 
     - Graphical gameplay for duotaire
+    -Cleanup of imports
 
 ## Stretch goals
