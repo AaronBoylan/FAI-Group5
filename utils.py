@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from peg_solitaire import peg_bidirectional_astar_search, test_performance, test_data_structures, test_directions
+from peg_solitaire import peg_bidirectional_astar_search
 from games4e import random_player, h_alphabeta_search, monte_carlo_tree_search, user_player, player
 from search4e import depth_first_bfs, greedy_bfs, astar_search, mcts_search
+from testBench import test_performance, test_data_structures, test_directions
 
 
 PEG_BOARDS = {
