@@ -109,6 +109,8 @@ def user_plays():
 
 
 def main():
+    print("\n==========Welcome to the Peg Solirtaire Simulator==========")
+    print(  "              2026 AI 801 Section 001: Group 5\n")
     print("Select an option:"   )
     print("1. Simulate Peg Solitaire")
     print("2. Simulate Peg Duotaire")
