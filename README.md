@@ -50,14 +50,25 @@ You’ll be prompted to select one of the following:
   - Direction-order comparisons for DFS
 - **User Plays Peg Duotaire**
   - Lets you play against a selected AI opponent (text/terminal interaction)
+- **Launch GUI**
+  - Runs the GUI
+
+
 
 ## Run (GUI)
 
-Launch the graphical menu (Pygame):
+Launch the graphical menu:
 
 ```bash
-python main.py --gui
+python main.py
+# then choose option 5 (Launch GUI)
+
 or
+
+python main.py --gui
+
+or
+
 python gui.py
 ```
 
