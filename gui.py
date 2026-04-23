@@ -49,9 +49,13 @@ def main_gui():
         'sys_test': 'Peg Solitaire Search Performance'
     }
 
-    while True:
+    running = True
+    while running:
         screen.fill((30, 30, 30))
         events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
 
         draw_section_header(screen, 'Peg Solitaire', (50, 30))
 
@@ -201,7 +205,7 @@ def main_gui():
 
         pygame.display.flip()
         clock.tick(30)
-
+    pygame.quit()
 
 def user_player_gui(game, state, screen):
     selected_idx = None

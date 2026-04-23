@@ -7,13 +7,9 @@ from visualize_search import plot_board_states, plot_duotaire_results
 from search4e import path_states, depth_first_bfs, greedy_bfs, astar_search, mcts_search
 from games4e import play_game, user_player
 from gui import main_gui
-from peg_solitaire import  test_performance, test_data_structures, test_directions
+from testBench import test_performance, test_data_structures, test_directions
 from os import sys
 from pathlib import Path
-
-
-
-
 
 # Backward compatibility - maintain existing dictionaries
 search_methods = {k: v['method'] for k, v in SEARCH_ALGORITHMS.items()}
@@ -129,7 +125,7 @@ def user_plays():
 
 def main():
     play_startup_audio()
-    print("\n==========Welcome to the Peg Solirtaire Simulator==========")
+    print("\n==========Welcome to the Peg Solitaire Simulator==========")
     print(  "              2026 AI 801 Section 001: Group 5\n")
     print("SHALL WE PLAY A GAME?"   )
     print("1. Simulate Peg Solitaire")
