@@ -10,7 +10,7 @@
         * Kaltura provides sharing URLs of your uploaded video (see below "video storage" section).
         Write the sharing URLs of your video (See below "video content" section) in "video.txt" file.
         * Source code (Python code/Jupyter Notebook/Knime/J2SE/C++ or any code you use)
-        * README file which should have the instructions on how to run the code/program
+
 
     - (2) post a link to your team's recorded video presentation to the Project Presentation (Video) Discussion Forum.
     One post in the forum include the following:
@@ -30,7 +30,7 @@
 
 ## Completed
     - Duotaire interactive human player
-    - MCTS player
+    - MCTS player                                      -JG Copmpleted
     -For Duotaire
         - Get non-random players in duotaire working -JG check this and they seem to work
                                                       - JG added A* and gready BFS
@@ -39,5 +39,5 @@
     -Cleanup of imports                             -JG completed.  removed circular imports
     -For Solitaire
         - Algorithm comparison
-
+    -README file which should have the instructions on how to run the code/program -- JG Completed
 ## Stretch goals
