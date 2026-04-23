@@ -1,0 +1,29 @@
+
+==========Welcome to the Peg Solirtaire Simulator==========
+              2026 AI 801 Section 001: Group 5
+
+SHALL WE PLAY A GAME?
+1. Simulate Peg Solitaire
+2. Simulate Peg Duotaire
+3. Run Test Bench
+4. User Plays Peg Duotaire
+5. Launch GUI
+Your choice: Running Test Bench...
+Select test type: 
+1. Compare Performance of Search Algorithms
+2. Compare Performance of Game Algorithms
+3. Compare Performance of Dict and Bitmask Data Structures
+4. Compare Performance of Different Direction Orders
+Testing DefaultDict
+State Size: 4280 bytes
+Max Frontier Nodes: 4,215
+Max Frontier Size: 17.20 MB
+Throughput: 50,704.71 (Nodes per Second)
+20550.55 ms 1,042,010 nodes |  256,500 goal |   31 cost | 256,530 actions | Dict English
+
+Testing Bitmask
+State Size: 32 bytes
+Max Frontier Nodes: 22,761
+Max Frontier Size: 0.69 MB
+Throughput: 112,632.35 (Nodes per Second)
+ 645.52 ms    72,707 nodes |   14,279 goal |   31 cost |  14,309 actions | Bitmask English
