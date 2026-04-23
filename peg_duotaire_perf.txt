@@ -1,0 +1,35 @@
+
+==========Welcome to the Peg Solirtaire Simulator==========
+              2026 AI 801 Section 001: Group 5
+
+SHALL WE PLAY A GAME?
+1. Simulate Peg Solitaire
+2. Simulate Peg Duotaire
+3. Run Test Bench
+4. User Plays Peg Duotaire
+5. Launch GUI
+Your choice: Running Test Bench...
+Select test type: 
+1. Compare Performance of Search Algorithms
+2. Compare Performance of Game Algorithms
+3. Compare Performance of Dict and Bitmask Data Structures
+4. Compare Performance of Different Direction Orders
+Running Peg Duotaire match 100 times on Triangle board: Random v.s. AlphaBeta
+Result: [12, 88]
+Running Peg Duotaire match 100 times on Triangle board: Random v.s. MCTS
+Result: [2, 98]
+Running Peg Duotaire match 100 times on Triangle board: AlphaBeta v.s. MCTS
+Result: [0, 100]
+Running Peg Duotaire match 100 times on English board: Random v.s. AlphaBeta
+Result: [10, 90]
+Running Peg Duotaire match 100 times on English board: Random v.s. MCTS
+Result: [1, 99]
+Running Peg Duotaire match 100 times on English board: AlphaBeta v.s. MCTS
+Result: [7, 93]
+Running Peg Duotaire match 100 times on French board: Random v.s. AlphaBeta
+Result: [6, 94]
+Running Peg Duotaire match 100 times on French board: Random v.s. MCTS
+Result: [0, 100]
+Running Peg Duotaire match 100 times on French board: AlphaBeta v.s. MCTS
+Result: [19, 81]
+{('Triangle', 'Random', 'AlphaBeta'): [12, 88], ('Triangle', 'Random', 'MCTS'): [2, 98], ('Triangle', 'AlphaBeta', 'MCTS'): [0, 100], ('English', 'Random', 'AlphaBeta'): [10, 90], ('English', 'Random', 'MCTS'): [1, 99], ('English', 'AlphaBeta', 'MCTS'): [7, 93], ('French', 'Random', 'AlphaBeta'): [6, 94], ('French', 'Random', 'MCTS'): [0, 100], ('French', 'AlphaBeta', 'MCTS'): [19, 81]}

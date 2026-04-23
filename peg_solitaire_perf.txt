@@ -1,0 +1,41 @@
+
+==========Welcome to the Peg Solirtaire Simulator==========
+              2026 AI 801 Section 001: Group 5
+
+SHALL WE PLAY A GAME?
+1. Simulate Peg Solitaire
+2. Simulate Peg Duotaire
+3. Run Test Bench
+4. User Plays Peg Duotaire
+5. Launch GUI
+Your choice: Running Test Bench...
+Select test type: 
+1. Compare Performance of Search Algorithms
+2. Compare Performance of Game Algorithms
+3. Compare Performance of Dict and Bitmask Data Structures
+4. Compare Performance of Different Direction Orders
+
+DFS:
+   8.39 ms       407 nodes |      215 goal |   13 cost |     227 actions | PegSolitaire Triangle
+  25.95 ms     2,509 nodes |    1,093 goal |   31 cost |   1,123 actions | PegSolitaire English
+77072.67 ms 19,326,257 nodes |3,682,335 goal |   35 cost |3,682,369 actions | PegSolitaire French
+
+Greedy BFS:
+ 238.24 ms       106 nodes |       52 goal |   13 cost |      64 actions | PegSolitaire Triangle
+ 147.25 ms    32,970 nodes |    7,352 goal |   31 cost |   7,382 actions | PegSolitaire English
+4197.23 ms   894,226 nodes |  152,689 goal |   35 cost | 152,723 actions | PegSolitaire French
+
+A*:
+  27.23 ms       269 nodes |       55 goal |   13 cost |      67 actions | PegSolitaire Triangle
+ 347.52 ms    72,707 nodes |   14,279 goal |   31 cost |  14,309 actions | PegSolitaire English
+ 481.64 ms    85,656 nodes |   12,150 goal |   35 cost |  12,184 actions | PegSolitaire French
+
+Bidirectional A*:
+   2.48 ms       241 nodes |        0 goal |   13 cost |      54 actions | PegSolitaire Triangle
+2239.77 ms    71,431 nodes |        0 goal |   31 cost |  13,854 actions | PegSolitaire English
+3526.65 ms    84,646 nodes |        0 goal |   35 cost |  12,034 actions | PegSolitaire French
+
+MCTS:
+   9.94 ms     2,125 nodes |      595 goal |   13 cost |     935 actions | PegSolitaire Triangle
+ 430.05 ms    62,034 nodes |    6,329 goal |   31 cost |  11,466 actions | PegSolitaire English
+28065.59 ms 3,959,583 nodes |  465,358 goal |   32 cost | 757,850 actions | PegSolitaire French

@@ -9,7 +9,7 @@ from peg_solitaire import PegSolitaire
 from peg_duotaire import PegDuotaire
 from search4e import path_states
 from games4e import play_game
-from search4e import depth_first_bfs
+from search4e import depth_first_bfs, mcts_search
 from peg_board import EnglishPegBoardInt
 
 
@@ -141,8 +141,11 @@ def main_gui():
                     peg_sol = PegSolitaire(shape=states['sol_board'])
                     search_method = next((v['method'] for v in SEARCH_ALGORITHMS.values() if v['short_name'] == states["sol_alg"]), None)
 
-                    if states['sol_board'] == 'French' and search_method == depth_first_bfs:
-                        draw_warning_overlay(screen, "Running DFS on the French board may take a significant amount of time. Click OK to proceed")
+                    if states['sol_board'] == 'French':
+                        if search_method == depth_first_bfs:
+                            draw_warning_overlay(screen, "Running DFS on the French board may take a significant amount of time. Click OK to proceed")
+                        elif search_method == mcts_search:
+                            draw_warning_overlay(screen, "Running MCTS on the French board may take a significant amount of time. Click OK to proceed")
 
                     if search_method:
                         pathStates = path_states(search_method(peg_sol))

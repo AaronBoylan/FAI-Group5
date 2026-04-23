@@ -93,7 +93,7 @@ TESTING_MENUS = {
     },
     3: {
         'name': "Compare Performance of Dict and Bitmask Data Structures",
-        'short_name': "Peg Board Bitwise Performance",
+        'short_name': "Peg Board Bitmask Performance",
         'method': test_data_structures
     },
     4: {
