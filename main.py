@@ -9,6 +9,7 @@ from games4e import play_game, user_player
 from gui import main_gui
 from peg_solitaire import  test_performance, test_data_structures, test_directions
 from os import sys
+from pathlib import Path
 
 
 
@@ -17,6 +18,24 @@ from os import sys
 # Backward compatibility - maintain existing dictionaries
 search_methods = {k: v['method'] for k, v in SEARCH_ALGORITHMS.items()}
 search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
+
+def play_startup_audio():
+    """Play the startup audio clip when the CLI starts (best-effort)."""
+    audio_path = Path(__file__).with_name("shall-we-play-a-game.mp3")
+    if not audio_path.exists():
+        return
+    try:
+        #  pygame mixer plays mp3 files
+        import pygame
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        pygame.mixer.music.load(str(audio_path))
+        pygame.mixer.music.play()
+        # delay to allow audio start.
+        time.sleep(0.25)
+    except Exception:
+        # Audio is non-critical; ignore failures (no audio device/codec issues, etc.)
+        return
 
 def play_peg_solitaire(visualize=True):
     menu_options = "\n".join([f"{k}. {v['name']}" for k, v in PEG_BOARDS.items()])
@@ -109,11 +128,15 @@ def user_plays():
 
 
 def main():
-    print("Select an option:"   )
+    play_startup_audio()
+    print("\n==========Welcome to the Peg Solirtaire Simulator==========")
+    print(  "              2026 AI 801 Section 001: Group 5\n")
+    print("SHALL WE PLAY A GAME?"   )
     print("1. Simulate Peg Solitaire")
     print("2. Simulate Peg Duotaire")
     print("3. Run Test Bench")
     print("4. User Plays Peg Duotaire")
+    print("5. Launch GUI")
     userInput = int(input("Your choice: "))
     match userInput:
         case 1:
@@ -133,8 +156,12 @@ def main():
             print("Playing Peg Duotaire...")
             user_plays()
 
+        case 5:
+            print("Launching GUI...")
+            main_gui()
+
         case _:
-            print("Invalid input. Please enter 1 or 2.")
+            print("Invalid input. Please enter 1-5.")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == '--gui':

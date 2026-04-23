@@ -1,8 +1,9 @@
 from utils import PEG_BOARDS, SEARCH_ALGORITHMS, GAME_PLAYERS
+import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"  #suppress pygame startup message
 import pygame
 import pygame.gfxdraw
 import sys
-import os
 from visualize_search import plot_board_states
 from peg_solitaire import PegSolitaire
 from peg_duotaire import PegDuotaire
