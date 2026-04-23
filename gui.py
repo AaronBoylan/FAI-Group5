@@ -1,6 +1,6 @@
 from utils import PEG_BOARDS, SEARCH_ALGORITHMS, GAME_PLAYERS
 import os
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"  #suppress pygame startup message
 import pygame
 import pygame.gfxdraw
 import sys
