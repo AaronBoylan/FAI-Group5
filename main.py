@@ -17,7 +17,7 @@ search_names = {k: v['short_name'] for k, v in SEARCH_ALGORITHMS.items()}
 
 def play_startup_audio():
     """Play the startup audio clip when the CLI starts (best-effort)."""
-    audio_path = Path(__file__).with_name("shall-we-play-a-game.mp3")
+    audio_path = Path(__file__).resolve().parent / "resources" / "shall-we-play-a-game.mp3"
     if not audio_path.exists():
         return
     try:

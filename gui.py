@@ -19,7 +19,7 @@ def pygame_init():
     os.environ['ApplePersistenceIgnoreState'] = 'YES'
 
     # Window/taskbar icon (set before creating the window).
-    icon_path = os.path.join(os.path.dirname(__file__), 'peg_solitaire.png')
+    icon_path = os.path.join(os.path.dirname(__file__), 'resources', 'peg_solitaire.png')
     try:
         icon = pygame.image.load(icon_path)
         pygame.display.set_icon(icon)
